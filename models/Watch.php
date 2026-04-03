@@ -20,6 +20,20 @@ class Watch
         return $this->conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // 1.1. Lấy theo danh mục
+    public function getByCategory($category_id)
+    {
+        $sql = "SELECT products.*, categories.name AS category_name
+                FROM products
+                LEFT JOIN categories ON products.category_id = categories.id
+                WHERE products.category_id = :category_id";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['category_id' => $category_id]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     // 2. Chi tiết
     public function find($id)
     {
@@ -32,6 +46,25 @@ class Watch
         $stmt->execute(['id' => $id]);
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // 2.1. Lấy nhiều sản phẩm theo danh sách ID
+    public function getByIds(array $ids)
+    {
+        if (empty($ids)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $sql = "SELECT products.*, categories.name AS category_name
+                FROM products
+                LEFT JOIN categories ON products.category_id = categories.id
+                WHERE products.id IN ($placeholders)";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($ids);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // 3. Thêm

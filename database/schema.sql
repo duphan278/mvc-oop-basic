@@ -1,10 +1,10 @@
 -- Tạo database + bảng tối thiểu để project chạy được
 
-CREATE DATABASE IF NOT EXISTS `duan1`
+CREATE DATABASE IF NOT EXISTS `watch_shop`
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE `duan1`;
+USE `watch_shop`;
 
 -- Bảng users (đăng ký/đăng nhập)
 CREATE TABLE IF NOT EXISTS `users` (
