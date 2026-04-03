@@ -21,11 +21,6 @@
             </a>
         </li>
         <li class="mb-2">
-            <a href="<?= BASE_URL ?>?controller=admin&action=categories" class="d-block py-3 px-3 text-white text-decoration-none rounded sidebar-link">
-                <i class="fas fa-tags"></i> Quản lý thương hiệu
-            </a>
-        </li>
-        <li class="mb-2">
             <a href="<?= BASE_URL ?>?controller=admin&action=reports" class="d-block py-3 px-3 text-white text-decoration-none rounded sidebar-link">
                 <i class="fas fa-chart-bar"></i> Báo cáo
             </a>

@@ -8,6 +8,18 @@ class User
         $this->conn = connectDB();
     }
 
+    private function usersHasStatusColumn(): bool
+    {
+        $sql = "SELECT COUNT(*) AS cnt
+                FROM INFORMATION_SCHEMA.COLUMNS
+                WHERE TABLE_SCHEMA = DATABASE()
+                  AND TABLE_NAME = 'users'
+                  AND COLUMN_NAME = 'status'";
+        $stmt = $this->conn->query($sql);
+        $row = $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : null;
+        return ((int)($row['cnt'] ?? 0)) > 0;
+    }
+
     public function findByEmail(string $email)
     {
         $sql = "SELECT * FROM users WHERE email = :email LIMIT 1";
@@ -38,7 +50,16 @@ class User
 
     public function getAll(): array
     {
-        $sql = "SELECT id, fullname, email, role, status FROM users ORDER BY id DESC";
+        // Một số môi trường DB cũ chưa có cột `status`, nên cần query an toàn.
+        if ($this->usersHasStatusColumn()) {
+            $sql = "SELECT id, fullname, email, role, status
+                    FROM users
+                    ORDER BY id DESC";
+        } else {
+            $sql = "SELECT id, fullname, email, role, 1 AS status
+                    FROM users
+                    ORDER BY id DESC";
+        }
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
@@ -67,6 +88,9 @@ class User
 
     public function updateStatus(int $id, int $status): bool
     {
+        if (!$this->usersHasStatusColumn()) {
+            return false;
+        }
         $sql = "UPDATE users SET status = :status WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
         return $stmt->execute(['id' => $id, 'status' => $status]);

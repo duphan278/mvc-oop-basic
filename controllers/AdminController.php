@@ -33,11 +33,16 @@ class AdminController extends HomeController
     public function listOrders()
     {
         $db = connectDB();
-        $stmt = $db->query("SELECT orders.*, users.fullname
-                             FROM orders 
-                             JOIN users ON orders.user_id = users.id 
-                             ORDER BY orders.id DESC");
-        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        try {
+            $stmt = $db->query("SELECT orders.*, users.fullname
+                                 FROM orders
+                                 JOIN users ON orders.user_id = users.id
+                                 ORDER BY orders.id DESC");
+            $orders = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        } catch (PDOException $e) {
+            // DB cũ có thể chưa có bảng/cột orders -> không cho trang admin chết.
+            $orders = [];
+        }
         require_once PATH_ROOT . '/views/admin/order_list.php';
     }
 
@@ -45,9 +50,16 @@ class AdminController extends HomeController
     {
         $db = connectDB();
 
-        $stmt = $db->prepare("SELECT orders.*, users.fullname FROM orders JOIN users ON orders.user_id = users.id WHERE orders.id = :id");
-        $stmt->execute(['id' => $id]);
-        $order = $stmt->fetch(PDO::FETCH_ASSOC);
+        try {
+            $stmt = $db->prepare("SELECT orders.*, users.fullname
+                                    FROM orders
+                                    JOIN users ON orders.user_id = users.id
+                                    WHERE orders.id = :id");
+            $stmt->execute(['id' => $id]);
+            $order = $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            $this->redirect('?controller=admin&action=list-orders');
+        }
 
         if (!$order) {
             $this->redirect('?controller=admin&action=list-orders');
@@ -131,21 +143,28 @@ class AdminController extends HomeController
         $db = connectDB();
 
         // 1. Thống kê tổng doanh thu (giả định cột total_amount và trạng thái đơn hàng)
-        $stmtRevenue = $db->query("SELECT SUM(total_amount) as total FROM orders WHERE status = 'completed'");
-        $rowRevenue = $stmtRevenue->fetch(PDO::FETCH_ASSOC);
-        $totalRevenue = $rowRevenue['total'] ?? 0;
+        $totalRevenue = 0;
+        $totalOrders = 0;
+        $recentOrders = [];
+        try {
+            $stmtRevenue = $db->query("SELECT SUM(total_amount) as total FROM orders WHERE status = 'completed'");
+            $rowRevenue = $stmtRevenue->fetch(PDO::FETCH_ASSOC);
+            $totalRevenue = $rowRevenue['total'] ?? 0;
 
-        // 2. Tổng số đơn hàng
-        $stmtOrders = $db->query("SELECT COUNT(*) as total FROM orders");
-        $rowOrders = $stmtOrders->fetch(PDO::FETCH_ASSOC);
-        $totalOrders = $rowOrders['total'] ?? 0;
+            // 2. Tổng số đơn hàng
+            $stmtOrders = $db->query("SELECT COUNT(*) as total FROM orders");
+            $rowOrders = $stmtOrders->fetch(PDO::FETCH_ASSOC);
+            $totalOrders = $rowOrders['total'] ?? 0;
 
-        // 3. Danh sách đơn hàng gần đây
-        $stmtRecent = $db->query("SELECT orders.*, users.fullname 
-                                   FROM orders 
-                                   JOIN users ON orders.user_id = users.id 
-                                   ORDER BY orders.id DESC LIMIT 10");
-        $recentOrders = $stmtRecent->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            // 3. Danh sách đơn hàng gần đây
+            $stmtRecent = $db->query("SELECT orders.*, users.fullname
+                                       FROM orders
+                                       JOIN users ON orders.user_id = users.id
+                                       ORDER BY orders.id DESC LIMIT 10");
+            $recentOrders = $stmtRecent->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        } catch (PDOException $e) {
+            // DB cũ chưa có orders -> để mặc định 0 rỗng.
+        }
 
         require_once PATH_ROOT . '/views/admin/reports.php';
     }

@@ -8,10 +8,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <?php include(PATH_ROOT . 'views/components/navbar.php'); ?>
+    <?php include(PATH_ROOT . '/views/admin/topbar.php'); ?>
 
     <div class="d-flex" style="min-height:100vh; background-color: #f8f9fa;">
-        <?php include(PATH_ROOT . 'views/admin/sidebar.php'); ?>
+        <?php include(PATH_ROOT . '/views/admin/sidebar.php'); ?>
 
         <div class="container flex-grow-1 p-4">
             <h1 class="mb-4 text-primary fw-bold">Báo cáo hệ thống</h1>

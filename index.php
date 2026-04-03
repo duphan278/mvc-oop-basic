@@ -48,12 +48,20 @@ if ($controller) {
                 $auth->loginPage();
                 exit;
             }
+            if ($action === 'registerPage') {
+                $auth->registerPage();
+                exit;
+            }
             if ($action === 'logout') {
                 $auth->logout();
                 exit;
             }
             if ($action === 'login') {
                 $auth->login();
+                exit;
+            }
+            if ($action === 'register') {
+                $auth->register();
                 exit;
             }
             break;
@@ -132,6 +140,10 @@ if ($controller) {
             }
             if ($action === 'removeCartItem' && isset($_GET['id'])) {
                 $userC->removeCartItem((int)$_GET['id']);
+                exit;
+            }
+            if ($action === 'decrementCartItem' && isset($_GET['id'])) {
+                $userC->decrementCartItem((int)$_GET['id']);
                 exit;
             }
             if ($action === 'cart') {

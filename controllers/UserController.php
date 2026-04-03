@@ -25,8 +25,7 @@ class UserController
                 return $this->cart();
             default:
                 $products = $this->product->getAll();
-                $brands = $this->category->getAll();
-                require_once PATH_ROOT . '/views/user/index.php';
+                require_once PATH_ROOT . '/views/home/index.php';
                 break;
         }
     }
@@ -61,6 +60,9 @@ class UserController
 
     public function addToCart($id)
     {
+        // Chặn thao tác giỏ hàng nếu chưa đăng nhập
+        checkUser();
+
         if (!isset($_SESSION['cart'])) {
             $_SESSION['cart'] = [];
         }
@@ -81,6 +83,9 @@ class UserController
 
     public function removeCartItem($id)
     {
+        // Chặn thao tác giỏ hàng nếu chưa đăng nhập
+        checkUser();
+
         if (isset($_SESSION['cart'][$id])) {
             unset($_SESSION['cart'][$id]);
         }
@@ -88,8 +93,27 @@ class UserController
         exit;
     }
 
+    public function decrementCartItem($id)
+    {
+        // Chặn thao tác giỏ hàng nếu chưa đăng nhập
+        checkUser();
+
+        if (isset($_SESSION['cart'][$id])) {
+            $_SESSION['cart'][$id]--;
+            if ($_SESSION['cart'][$id] <= 0) {
+                unset($_SESSION['cart'][$id]);
+            }
+        }
+
+        header('Location: ' . BASE_URL . '?controller=user&action=cart');
+        exit;
+    }
+
     public function cart()
     {
+        // Chặn xem giỏ hàng nếu chưa đăng nhập
+        checkUser();
+
         $cart = $_SESSION['cart'] ?? [];
         $cartItems = [];
         $total = 0;

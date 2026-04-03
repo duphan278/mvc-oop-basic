@@ -3,45 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sản phẩm - Watch Shop</title>
+    <title>Sản phẩm - Luxe Watches</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .product-grid-item {
+            border: 1px solid #eee;
+            background: #fff;
+            padding: 10px;
+            height: 100%;
+        }
+        .product-grid-item img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+        .product-name {
+            font-size: 0.95rem;
+            min-height: 42px;
+        }
+        .product-price {
+            color: #d0021b;
+            font-weight: 700;
+        }
+        .product-meta {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        .content-wrap {
+            max-width: 1220px;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
     <?php include PATH_ROOT . '/views/components/navbar.php'; ?>
-    <div class="container mt-4">
-        <h1>Danh sách sản phẩm</h1>
-        <form method="GET" action="">
-            <input type="hidden" name="controller" value="user">
-            <input type="hidden" name="action" value="products">
-            <div class="mb-3">
-                <label for="category" class="form-label">Lọc theo danh mục:</label>
-                <select name="id" id="category" class="form-select" onchange="this.form.submit()">
-                    <option value="">Tất cả</option>
-                    <?php
-                    $categories = (new Category())->getAll();
-                    foreach ($categories as $cat) {
-                        $selected = (isset($_GET['id']) && $_GET['id'] == $cat['id']) ? 'selected' : '';
-                        echo "<option value='{$cat['id']}' $selected>{$cat['name']}</option>";
-                    }
-                    ?>
-                </select>
+    <div class="container-fluid mt-3">
+        <div class="content-wrap">
+        <?php
+            $categories = (new Category())->getAll();
+            $currentCat = $_GET['id'] ?? '';
+        ?>
+
+        <!-- Dải thương hiệu / danh mục ở trên cùng -->
+        <div class="bg-light border rounded px-3 py-2 mb-3">
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="fw-bold me-2">Thương hiệu:</span>
+                <a href="<?= BASE_URL ?>?controller=user&action=products"
+                   class="btn btn-sm <?= $currentCat === '' ? 'btn-warning' : 'btn-outline-secondary' ?>">
+                    Tất cả
+                </a>
+                <?php foreach ($categories as $cat): ?>
+                    <a href="<?= BASE_URL ?>?controller=user&action=products&id=<?= $cat['id'] ?>"
+                       class="btn btn-sm <?= $currentCat == $cat['id'] ? 'btn-warning' : 'btn-outline-secondary' ?>">
+                        <?= htmlspecialchars($cat['name']) ?>
+                    </a>
+                <?php endforeach; ?>
             </div>
-        </form>
-        <div class="row">
+        </div>
+
+        <h5 class="mb-3">Đồng hồ chính hãng</h5>
+
+        <div class="row justify-content-center">
             <?php foreach ($products as $product): ?>
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <img src="<?= BASE_URL . $product['image'] ?>" class="card-img-top" alt="<?= $product['name'] ?>">
-                        <div class="card-body">
-                            <h5 class="card-title"><?= $product['name'] ?></h5>
-                            <p class="card-text">Giá: <?= number_format($product['price']) ?> VND</p>
-                            <p class="card-text">Danh mục: <?= $product['category_name'] ?></p>
-                            <a href="<?= BASE_URL ?>?controller=user&action=detail&id=<?= $product['id'] ?>" class="btn btn-primary">Xem chi tiết</a>
-                            <a href="<?= BASE_URL ?>?controller=user&action=addToCart&id=<?= $product['id'] ?>" class="btn btn-success">Thêm vào giỏ</a>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="product-grid-item">
+                        <a href="<?= BASE_URL ?>?controller=user&action=detail&id=<?= $product['id'] ?>">
+                            <img src="<?= BASE_URL . $product['image'] ?>" alt="<?= htmlspecialchars($product['name']) ?>">
+                        </a>
+                        <div class="mt-2 product-name">
+                            <a href="<?= BASE_URL ?>?controller=user&action=detail&id=<?= $product['id'] ?>"
+                               class="text-decoration-none text-dark">
+                                <?= htmlspecialchars($product['name']) ?>
+                            </a>
+                        </div>
+                        <div class="product-price mt-1">
+                            <?= number_format($product['price'], 0, ',', '.') ?> VND
+                        </div>
+                        <div class="product-meta mt-1">
+                            Danh mục: <?= htmlspecialchars($product['category_name'] ?? 'N/A') ?>
+                        </div>
+                        <div class="mt-2 d-flex gap-2">
+                            <a href="<?= BASE_URL ?>?controller=user&action=detail&id=<?= $product['id'] ?>"
+                               class="btn btn-sm btn-outline-secondary">
+                                Xem chi tiết
+                            </a>
+                            <a href="<?= BASE_URL ?>?controller=user&action=addToCart&id=<?= $product['id'] ?>"
+                               class="btn btn-sm btn-danger">
+                                Thêm vào giỏ
+                            </a>
                         </div>
                     </div>
                 </div>
             <?php endforeach; ?>
+        </div>
         </div>
     </div>
 </body>

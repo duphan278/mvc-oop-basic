@@ -9,10 +9,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-    <?php include(PATH_ROOT . 'views/components/navbar.php'); ?>
+    <?php include(PATH_ROOT . '/views/admin/topbar.php'); ?>
 
     <div class="d-flex" style="min-height:100vh; background-color: #f8f9fa;">
-        <?php include(PATH_ROOT . 'views/admin/sidebar.php'); ?>
+        <?php include(PATH_ROOT . '/views/admin/sidebar.php'); ?>
 
         <div class="container flex-grow-1 p-4">
             <div class="row justify-content-center">
