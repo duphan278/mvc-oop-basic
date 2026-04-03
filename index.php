@@ -15,6 +15,7 @@ require_once './controllers/AdminController.php';
 // Require toàn bộ file Models
 require_once './models/Watch.php';
 require_once './models/User.php';
+require_once './models/Category.php';
 
 // Route
 $act = $_GET['act'] ?? '/';
@@ -107,6 +108,38 @@ if ($controller) {
             $userC = new UserController();
             if ($action === 'home' || !$action) {
                 $userC->home();
+                exit;
+            }
+            if ($action === 'products') {
+                $userC->products();
+                exit;
+            }
+            if ($action === 'brands') {
+                $userC->brands();
+                exit;
+            }
+            if ($action === 'contact') {
+                $userC->contact();
+                exit;
+            }
+            if ($action === 'detail' && isset($_GET['id'])) {
+                $userC->detail((int)$_GET['id']);
+                exit;
+            }
+            if ($action === 'addToCart' && isset($_GET['id'])) {
+                $userC->addToCart((int)$_GET['id']);
+                exit;
+            }
+            if ($action === 'removeCartItem' && isset($_GET['id'])) {
+                $userC->removeCartItem((int)$_GET['id']);
+                exit;
+            }
+            if ($action === 'cart') {
+                $userC->cart();
+                exit;
+            }
+            if ($action === 'productsByCategory' && isset($_GET['id'])) {
+                $userC->productsByCategory((int)$_GET['id']);
                 exit;
             }
             break;
