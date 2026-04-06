@@ -6,6 +6,21 @@ session_start();
 require_once './commons/env.php'; // Khai báo biến môi trường
 require_once './commons/function.php'; // Hàm hỗ trợ
 
+// Luon nap CSS noi bo de tranh vo giao dien khi CDN bi chan/mat mang.
+ob_start(function ($buffer) {
+    // Bo toan bo CSS inline cu de giao dien moi duoc ap dung dong nhat.
+    $buffer = preg_replace('/<style\b[^>]*>.*?<\/style>/is', '', $buffer);
+
+    if (stripos($buffer, '<head') !== false) {
+        $localCss = '<link rel="stylesheet" href="' . BASE_URL . 'public/css/bootstrap.min.css">';
+        $themeCss = '<link rel="stylesheet" href="' . BASE_URL . 'public/css/app.css">';
+        $inject = $localCss . PHP_EOL . '    ' . $themeCss;
+        return preg_replace('/<head([^>]*)>/i', '<head$1>' . PHP_EOL . '    ' . $inject, $buffer, 1);
+    }
+
+    return $buffer;
+});
+
 // Require toàn bộ file Controllers
 require_once './controllers/UserController.php';
 require_once './controllers/HomeController.php';
@@ -18,7 +33,6 @@ require_once './models/User.php';
 require_once './models/Category.php';
 require_once './models/Order.php';
 require_once './models/Voucher.php';
-require_once './models/Wishlist.php';
 
 // Route
 $act = $_GET['act'] ?? '/';
@@ -167,18 +181,6 @@ if ($controller) {
             }
             if ($action === 'apply-voucher') {
                 $userC->applyVoucher();
-                exit;
-            }
-            if ($action === 'wishlist') {
-                $userC->wishlist();
-                exit;
-            }
-            if ($action === 'add-to-wishlist') {
-                $userC->addToWishlist();
-                exit;
-            }
-            if ($action === 'remove-from-wishlist') {
-                $userC->removeFromWishlist();
                 exit;
             }
             if ($action === 'order-status') {

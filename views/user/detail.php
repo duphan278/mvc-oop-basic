@@ -107,10 +107,6 @@
             transform: translateY(-2px);
         }
 
-        .btn-wishlist {
-            flex: 1;
-        }
-
         .back-to-list {
             display: inline-flex;
             align-items: center;
@@ -150,18 +146,6 @@
                     <a href="<?= BASE_URL ?>?controller=user&action=addToCart&id=<?= $product['id'] ?>" class="btn btn-cart">
                         <i class="fas fa-cart-plus me-1"></i>Thêm vào giỏ hàng
                     </a>
-                    <?php if (isset($_SESSION['user'])): ?>
-                        <?php
-                        $isInWishlist = isset($wishlist) && $wishlist->isInWishlist($_SESSION['user']['id'], $product['id']);
-                        ?>
-                        <button type="button" class="btn <?= $isInWishlist ? 'btn-danger' : 'btn-outline-danger' ?> btn-wishlist wishlist-btn"
-                                data-product-id="<?= $product['id'] ?>" data-in-wishlist="<?= $isInWishlist ? '1' : '0' ?>">
-                            <i class="fas fa-heart me-1"></i>
-                            <span class="wishlist-text">
-                                <?= $isInWishlist ? 'Đã yêu thích' : 'Yêu thích' ?>
-                            </span>
-                        </button>
-                    <?php endif; ?>
                 </div>
                 <a href="<?= BASE_URL ?>?controller=user&action=products" class="text-decoration-none back-to-list small fw-medium">
                     <i class="fas fa-long-arrow-alt-left me-1"></i> Quay lại danh sách sản phẩm
@@ -171,47 +155,3 @@
     </div>
 </body>
 </html>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const wishlistBtn = document.querySelector('.wishlist-btn');
-    if (wishlistBtn) {
-        wishlistBtn.addEventListener('click', function() {
-            const productId = this.getAttribute('data-product-id');
-            const isInWishlist = this.getAttribute('data-in-wishlist') === '1';
-            const action = isInWishlist ? 'remove-from-wishlist' : 'add-to-wishlist';
-
-            fetch('<?= BASE_URL ?>?controller=user&action=' + action, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'product_id=' + productId
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    if (isInWishlist) {
-                        // Đã xóa khỏi wishlist
-                        wishlistBtn.classList.remove('btn-danger');
-                        wishlistBtn.classList.add('btn-outline-danger');
-                        wishlistBtn.setAttribute('data-in-wishlist', '0');
-                        wishlistBtn.querySelector('.wishlist-text').textContent = 'Yêu thích';
-                    } else {
-                        // Đã thêm vào wishlist
-                        wishlistBtn.classList.remove('btn-outline-danger');
-                        wishlistBtn.classList.add('btn-danger');
-                        wishlistBtn.setAttribute('data-in-wishlist', '1');
-                        wishlistBtn.querySelector('.wishlist-text').textContent = 'Đã yêu thích';
-                    }
-                } else {
-                    alert('Có lỗi xảy ra: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra khi cập nhật danh sách yêu thích');
-            });
-        });
-    }
-});
-</script>

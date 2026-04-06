@@ -5,7 +5,6 @@ class UserController
     public $category;
     public $order;
     public $voucher;
-    public $wishlist;
 
     public function __construct()
     {
@@ -13,7 +12,6 @@ class UserController
         $this->category = new Category();
         $this->order = new Order();
         $this->voucher = new Voucher();
-        $this->wishlist = new Wishlist();
     }
 
     public function home()
@@ -64,7 +62,6 @@ class UserController
     public function detail($id)
     {
         $product = $this->product->find($id);
-        $wishlist = $this->wishlist;
         require_once PATH_ROOT . '/views/user/detail.php';
     }
 
@@ -373,62 +370,4 @@ class UserController
         exit;
     }
 
-    public function wishlist()
-    {
-        checkUser();
-        $userId = $_SESSION['user']['id'];
-        $wishlistItems = $this->wishlist->getByUser($userId);
-
-        require_once PATH_ROOT . '/views/user/wishlist.php';
-    }
-
-    public function addToWishlist()
-    {
-        checkUser();
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $productId = (int)($_POST['product_id'] ?? 0);
-            $userId = $_SESSION['user']['id'];
-
-            if ($productId <= 0) {
-                echo json_encode(['success' => false, 'message' => 'ID sản phẩm không hợp lệ']);
-                exit;
-            }
-
-            if ($this->wishlist->add($userId, $productId)) {
-                echo json_encode(['success' => true, 'message' => 'Đã thêm vào danh sách yêu thích']);
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Không thể thêm vào danh sách yêu thích']);
-            }
-            exit;
-        }
-
-        echo json_encode(['success' => false, 'message' => 'Phương thức không hợp lệ']);
-        exit;
-    }
-
-    public function removeFromWishlist()
-    {
-        checkUser();
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $productId = (int)($_POST['product_id'] ?? 0);
-            $userId = $_SESSION['user']['id'];
-
-            if ($productId <= 0) {
-                echo json_encode(['success' => false, 'message' => 'ID sản phẩm không hợp lệ']);
-                exit;
-            }
-
-            if ($this->wishlist->remove($userId, $productId)) {
-                echo json_encode(['success' => true, 'message' => 'Đã xóa khỏi danh sách yêu thích']);
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Không thể xóa khỏi danh sách yêu thích']);
-            }
-            exit;
-        }
-
-        echo json_encode(['success' => false, 'message' => 'Phương thức không hợp lệ']);
-        exit;
-    }
 }
