@@ -22,7 +22,7 @@
                             <h2 class="mb-0"><i class="fas fa-edit"></i> Chỉnh sửa sản phẩm</h2>
                         </div>
                         <div class="card-body p-4">
-                            <form method="post" action="<?= BASE_URL ?>?controller=admin&action=edit&id=<?= $product['id'] ?>">
+                            <form method="post" action="<?= BASE_URL ?>?controller=admin&action=edit&id=<?= $product['id'] ?>" enctype="multipart/form-data">
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="name" class="form-label fw-bold">Tên sản phẩm <span class="text-danger">*</span></label>
@@ -40,7 +40,15 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="image" class="form-label fw-bold">Ảnh sản phẩm</label>
-                                        <input type="text" name="image" id="image" class="form-control" value="<?= htmlspecialchars($product['image'] ?? '') ?>" placeholder="Tên file ảnh">
+                                        <input type="file" name="image" id="image" class="form-control" accept="image/*" onchange="previewImage(event)">
+                                        <div class="mt-2">
+                                            <?php if (!empty($product['image']) && file_exists(PATH_ROOT . '/uploads/' . $product['image'])): ?>
+                                                <p class="text-muted small">Ảnh hiện tại:</p>
+                                                <img id="currentImage" src="<?= BASE_URL ?>/uploads/<?= htmlspecialchars($product['image']) ?>" alt="Current image" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 5px;">
+                                            <?php endif; ?>
+                                            <img id="imagePreview" src="" alt="Preview" style="max-width: 200px; max-height: 200px; display: none; border: 1px solid #ddd; border-radius: 5px; margin-top: 10px;">
+                                        </div>
+                                        <input type="hidden" name="current_image" value="<?= htmlspecialchars($product['image'] ?? '') ?>">
                                     </div>
                                 </div>
                                 <div class="mb-3">
@@ -63,4 +71,29 @@
         </div>
     </div>
 </body>
+<script>
+function previewImage(event) {
+    const file = event.target.files[0];
+    const preview = document.getElementById('imagePreview');
+    const currentImage = document.getElementById('currentImage');
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            if (currentImage) {
+                currentImage.style.display = 'none';
+            }
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.src = '';
+        preview.style.display = 'none';
+        if (currentImage) {
+            currentImage.style.display = 'block';
+        }
+    }
+}
+</script>
 </html>

@@ -5,21 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sản phẩm - Luxe Watches</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .product-grid-item {
-            border: 1px solid #eee;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
             background: #fff;
             padding: 10px;
             height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+        .product-grid-item:hover {
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            transform: translateY(-3px);
+            border-color: #bbb;
         }
         .product-grid-item img {
             width: 100%;
             height: 220px;
             object-fit: cover;
+            background: #f8f9fa;
         }
         .product-name {
             font-size: 0.95rem;
-            min-height: 42px;
+            height: 2.8em;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
         .product-price {
             color: #d0021b;
@@ -68,7 +83,11 @@
                 <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                     <div class="product-grid-item">
                         <a href="<?= BASE_URL ?>?controller=user&action=detail&id=<?= $product['id'] ?>">
-                            <img src="<?= BASE_URL . $product['image'] ?>" alt="<?= htmlspecialchars($product['name']) ?>">
+                            <?php if (!empty($product['image']) && file_exists(PATH_ROOT . '/uploads/' . $product['image'])): ?>
+                                <img src="<?= BASE_URL ?>/uploads/<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>" class="img-fluid">
+                            <?php else: ?>
+                                <img src="<?= BASE_URL ?>/public/images/no-image.svg" alt="No image" class="img-fluid">
+                            <?php endif; ?>
                         </a>
                         <div class="mt-2 product-name">
                             <a href="<?= BASE_URL ?>?controller=user&action=detail&id=<?= $product['id'] ?>"
@@ -82,14 +101,14 @@
                         <div class="product-meta mt-1">
                             Danh mục: <?= htmlspecialchars($product['category_name'] ?? 'N/A') ?>
                         </div>
-                        <div class="mt-2 d-flex gap-2">
+                        <div class="mt-auto pt-3 d-flex gap-2">
                             <a href="<?= BASE_URL ?>?controller=user&action=detail&id=<?= $product['id'] ?>"
-                               class="btn btn-sm btn-outline-secondary">
-                                Xem chi tiết
+                               class="btn btn-sm btn-outline-secondary flex-grow-1">
+                                <i class="fas fa-eye me-1"></i> Chi tiết
                             </a>
                             <a href="<?= BASE_URL ?>?controller=user&action=addToCart&id=<?= $product['id'] ?>"
-                               class="btn btn-sm btn-danger">
-                                Thêm vào giỏ
+                               class="btn btn-sm btn-danger flex-grow-1">
+                                <i class="fas fa-cart-plus me-1"></i> Giỏ hàng
                             </a>
                         </div>
                     </div>

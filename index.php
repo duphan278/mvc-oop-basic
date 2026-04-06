@@ -16,6 +16,9 @@ require_once './controllers/AdminController.php';
 require_once './models/Watch.php';
 require_once './models/User.php';
 require_once './models/Category.php';
+require_once './models/Order.php';
+require_once './models/Voucher.php';
+require_once './models/Wishlist.php';
 
 // Route
 $act = $_GET['act'] ?? '/';
@@ -73,6 +76,14 @@ if ($controller) {
             }
             if ($action === 'list-orders') {
                 $admin->listOrders();
+                exit;
+            }
+            if ($action === 'confirm-order' && isset($_GET['id'])) {
+                $admin->confirmOrder((int)$_GET['id']);
+                exit;
+            }
+            if ($action === 'ship-order' && isset($_GET['id'])) {
+                $admin->shipOrder((int)$_GET['id']);
                 exit;
             }
             if ($action === 'create') {
@@ -148,6 +159,34 @@ if ($controller) {
             }
             if ($action === 'cart') {
                 $userC->cart();
+                exit;
+            }
+            if ($action === 'checkout') {
+                $userC->checkout();
+                exit;
+            }
+            if ($action === 'apply-voucher') {
+                $userC->applyVoucher();
+                exit;
+            }
+            if ($action === 'wishlist') {
+                $userC->wishlist();
+                exit;
+            }
+            if ($action === 'add-to-wishlist') {
+                $userC->addToWishlist();
+                exit;
+            }
+            if ($action === 'remove-from-wishlist') {
+                $userC->removeFromWishlist();
+                exit;
+            }
+            if ($action === 'order-status') {
+                $userC->orderStatus();
+                exit;
+            }
+            if ($action === 'cancel-order' && isset($_GET['id'])) {
+                $userC->cancelOrder((int)$_GET['id']);
                 exit;
             }
             if ($action === 'productsByCategory' && isset($_GET['id'])) {

@@ -32,6 +32,10 @@
                 <div class="small">Hệ thống cửa hàng</div>
                 <div class="fw-bold">34 tỉnh thành</div>
             </div>
+            <!-- Dark Mode Toggle -->
+            <button id="theme-toggle" class="btn btn-outline-light border-0 p-2" title="Chuyển đổi chế độ sáng/tối">
+                <i class="fas fa-moon"></i>
+            </button>
             <?php if (!$isAdmin): ?>
                 <a href="<?= BASE_URL ?>?controller=user&action=cart" class="text-decoration-none text-white position-relative">
                     <i class="fas fa-shopping-cart fs-4"></i>
@@ -67,6 +71,14 @@
                 <li class="nav-item">
                     <a class="nav-link" href="<?= BASE_URL ?>?controller=user&action=contact">LIÊN HỆ</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?= BASE_URL ?>?controller=user&action=wishlist">
+                        <i class="fas fa-heart me-1"></i>YÊU THÍCH
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?= BASE_URL ?>?controller=user&action=order-status">TRẠNG THÁI ĐƠN HÀNG</a>
+                </li>
                 <?php if ($isAdmin): ?>
                     <li class="nav-item">
                         <a class="nav-link text-danger" href="<?= BASE_URL ?>?controller=admin&action=home">ADMIN</a>
@@ -96,3 +108,119 @@
         </div>
     </div>
 </nav>
+
+<!-- Banner khuyến mãi cho người dùng đã đăng nhập -->
+<?php if (isset($_SESSION['user'])): ?>
+<div class="alert alert-warning alert-dismissible fade show mb-0 border-0 rounded-0" role="alert" style="background: linear-gradient(135deg, #ff6b6b, #feca57); color: white;">
+    <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap">
+        <div class="d-flex align-items-center gap-3">
+            <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=80&q=80"
+                 alt="Khuyến mãi" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+            <div>
+                <h5 class="mb-1 fw-bold">🎉 Chương Trình Khuyến Mãi 4/4! 🎉</h5>
+                <p class="mb-0 small">Giảm giá lên đến 50% cho tất cả sản phẩm đồng hồ. Cơ hội vàng không thể bỏ lỡ!</p>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a href="<?= BASE_URL ?>?controller=user&action=products" class="btn btn-light btn-sm fw-bold">
+                Mua ngay <i class="fas fa-arrow-right ms-1"></i>
+            </a>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
+<!-- Dark Mode Styles -->
+<style>
+    /* Dark mode variables */
+    :root {
+        --bg-color: #ffffff;
+        --text-color: #1a1a1a;
+        --navbar-bg: #000000;
+        --card-bg: #ffffff;
+        --border-color: #dee2e6;
+        --text-secondary: #6c757d;
+        --text-muted: #8e8e93;
+    }
+
+    [data-theme="dark"] {
+        --bg-color: #0f0f0f;
+        --text-color: #ffffff;
+        --navbar-bg: #1a1a1a;
+        --card-bg: #1a1a1a;
+        --border-color: #2a2a2a;
+        --text-secondary: #b0b0b0;
+        --text-muted: #888888;
+    }
+
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .navbar-dark {
+        background-color: var(--navbar-bg) !important;
+    }
+
+    .card, .product-grid-item {
+        background-color: var(--card-bg);
+        border-color: var(--border-color);
+        color: var(--text-color);
+    }
+
+    .card-title, .product-name a {
+        color: var(--text-color) !important;
+    }
+
+    .card-text, .product-meta {
+        color: var(--text-secondary) !important;
+    }
+
+    .theme-transition {
+        transition: all 0.3s ease;
+    }
+
+    /* Enhanced typography for dark mode */
+    [data-theme="dark"] h1,
+    [data-theme="dark"] h2,
+    [data-theme="dark"] h3,
+    [data-theme="dark"] h4,
+    [data-theme="dark"] h5,
+    [data-theme="dark"] h6 {
+        color: var(--text-color);
+    }
+
+    [data-theme="dark"] .section-title::after {
+        background: linear-gradient(90deg, #60a5fa, #a78bfa);
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+    const icon = themeToggle.querySelector('i');
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') {
+        html.setAttribute('data-theme', 'dark');
+        icon.className = 'fas fa-sun';
+    }
+
+    themeToggle.addEventListener('click', function() {
+        const currentTheme = html.getAttribute('data-theme');
+        if (currentTheme === 'dark') {
+            html.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+            icon.className = 'fas fa-moon';
+        } else {
+            html.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            icon.className = 'fas fa-sun';
+        }
+    });
+});
+</script>

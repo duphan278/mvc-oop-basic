@@ -40,7 +40,10 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="image" class="form-label fw-bold">Ảnh sản phẩm</label>
-                                        <input type="text" name="image" id="image" class="form-control" placeholder="Tên file ảnh (ví dụ: product.jpg)" value="<?= htmlspecialchars($_POST['image'] ?? '') ?>">
+                                        <input type="file" name="image" id="image" class="form-control" accept="image/*" onchange="previewImage(event)">
+                                        <div class="mt-2">
+                                            <img id="imagePreview" src="" alt="Preview" style="max-width: 200px; max-height: 200px; display: none; border: 1px solid #ddd; border-radius: 5px;">
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="mb-3">
@@ -63,4 +66,22 @@
         </div>
     </div>
 </body>
+<script>
+function previewImage(event) {
+    const file = event.target.files[0];
+    const preview = document.getElementById('imagePreview');
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.src = '';
+        preview.style.display = 'none';
+    }
+}
+</script>
 </html>

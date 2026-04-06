@@ -4,8 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý đơn hàng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+        }
+    </style>
 </head>
 <body>
     <?php include(PATH_ROOT . '/views/admin/topbar.php'); ?>
@@ -41,12 +57,33 @@
                                             <td class="text-end text-muted"><?= number_format($order['shipping_fee'] ?? 0, 0, ',', '.') ?> VNĐ</td>
                                             <td class="text-end fw-bold"><?= number_format($order['total_amount'], 0, ',', '.') ?> VNĐ</td>
                                             <td class="text-center">
-                                                <span class="badge bg-info"><?= htmlspecialchars($order['status']) ?></span>
+                                                <?php
+                                                $statusClasses = [
+                                                    'pending' => 'bg-warning',
+                                                    'processing' => 'bg-info',
+                                                    'shipping' => 'bg-primary',
+                                                    'completed' => 'bg-success',
+                                                    'canceled' => 'bg-danger'
+                                                ];
+                                                $statusKey = strtolower($order['status']);
+                                                $statusClass = $statusClasses[$statusKey] ?? 'bg-secondary';
+                                                ?>
+                                                <span class="badge <?= $statusClass ?>"><?= htmlspecialchars($order['status']) ?></span>
                                             </td>
                                             <td class="text-center">
                                                 <a href="<?= BASE_URL ?>?controller=admin&action=edit-order&id=<?= $order['id'] ?>" class="btn btn-sm btn-outline-primary">
                                                     <i class="fas fa-edit"></i> Cập nhật
                                                 </a>
+
+                                                <?php if ($order['status'] === 'pending'): ?>
+                                                    <a href="<?= BASE_URL ?>?controller=admin&action=confirm-order&id=<?= $order['id'] ?>" class="btn btn-sm btn-success mt-1">
+                                                        <i class="fas fa-check-circle"></i> Xác nhận
+                                                    </a>
+                                                <?php elseif ($order['status'] === 'shipping'): ?>
+                                                    <a href="<?= BASE_URL ?>?controller=admin&action=ship-order&id=<?= $order['id'] ?>" class="btn btn-sm btn-warning mt-1">
+                                                        <i class="fas fa-truck"></i> Giao hàng
+                                                    </a>
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

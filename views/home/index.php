@@ -6,7 +6,7 @@
     <title>Luxe Watches - Đồng hồ chính hãng</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         :root {
@@ -14,39 +14,206 @@
             --secondary-color: #3498db;
             --accent-color: #e74c3c;
             --light-bg: #f8f9fa;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6c757d;
+            --text-muted: #8e8e93;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
-            line-height: 1.6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.7;
+            color: var(--text-primary);
+            font-weight: 400;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+        }
+
+        h3 {
+            font-size: 2rem;
+        }
+
+        h4 {
+            font-size: 1.5rem;
+        }
+
+        h5 {
+            font-size: 1.25rem;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            margin: 1rem auto 0;
+            border-radius: 2px;
         }
 
         .product-grid-item {
-            border: 1px solid #eee;
+            border: 1px solid #e9ecef;
             background: #fff;
-            padding: 10px;
+            padding: 1.5rem;
             height: 100%;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
         }
+
+        .product-grid-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
         .product-grid-item img {
             width: 100%;
             height: 220px;
             object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
         }
+
         .product-name {
-            font-size: 0.95rem;
-            min-height: 42px;
+            font-size: 1rem;
+            font-weight: 500;
+            min-height: 48px;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
         }
+
+        .product-name a {
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .product-name a:hover {
+            color: var(--primary-color);
+        }
+
         .product-price {
-            color: #d0021b;
+            color: #dc3545;
             font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
         }
+
         .product-meta {
-            font-size: 0.8rem;
-            color: #666;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 400;
         }
+
         .content-wrap {
             max-width: 1220px;
             margin: 0 auto;
+        }
+
+        .btn {
+            font-weight: 500;
+            letter-spacing: 0.025em;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .card-text {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .newsletter-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .newsletter-section h3 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .newsletter-section p {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .form-control:focus {
+            border-color: white;
+            background: rgba(255,255,255,0.2);
+            color: white;
         }
         .hero-banner {
             border-radius: 14px;
@@ -203,7 +370,11 @@
                 <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                     <div class="product-grid-item">
                         <a href="<?= BASE_URL ?>?controller=user&action=detail&id=<?= $product['id'] ?>">
-                            <img src="<?= BASE_URL . $product['image'] ?>" alt="<?= htmlspecialchars($product['name']) ?>">
+                            <?php if (!empty($product['image']) && file_exists(PATH_ROOT . '/uploads/' . $product['image'])): ?>
+                                <img src="<?= BASE_URL ?>/uploads/<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>" class="img-fluid">
+                            <?php else: ?>
+                                <img src="<?= BASE_URL ?>/public/images/no-image.svg" alt="No image" class="img-fluid">
+                            <?php endif; ?>
                         </a>
                         <div class="mt-2 product-name">
                             <a href="<?= BASE_URL ?>?controller=user&action=detail&id=<?= $product['id'] ?>"
@@ -231,6 +402,114 @@
                 </div>
             <?php endforeach; ?>
         </div>
+
+        <!-- Sản phẩm nổi bật -->
+        <section class="my-5">
+            <h3 class="section-title text-center">Sản Phẩm Nổi Bật</h3>
+            <div class="row justify-content-center">
+                <?php
+                // Lấy 4 sản phẩm đầu làm nổi bật
+                $featuredProducts = array_slice($products, 0, 4);
+                foreach ($featuredProducts as $product): ?>
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                        <div class="product-grid-item">
+                            <a href="<?= BASE_URL ?>?controller=user&action=detail&id=<?= $product['id'] ?>">
+                                <?php if (!empty($product['image']) && file_exists(PATH_ROOT . '/uploads/' . $product['image'])): ?>
+                                    <img src="<?= BASE_URL ?>/uploads/<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>" class="img-fluid">
+                                <?php else: ?>
+                                    <img src="<?= BASE_URL ?>/public/images/no-image.png" alt="No image" class="img-fluid">
+                                <?php endif; ?>
+                            </a>
+                            <div class="mt-2 product-name">
+                                <a href="<?= BASE_URL ?>?controller=user&action=detail&id=<?= $product['id'] ?>"
+                                   class="text-decoration-none text-dark">
+                                    <?= htmlspecialchars($product['name']) ?>
+                                </a>
+                            </div>
+                            <div class="product-price mt-1">
+                                <?= number_format($product['price'], 0, ',', '.') ?> VND
+                            </div>
+                            <div class="product-meta mt-1">
+                                Danh mục: <?= htmlspecialchars($product['category_name'] ?? 'N/A') ?>
+                            </div>
+                            <div class="mt-2 d-flex gap-2">
+                                <a href="<?= BASE_URL ?>?controller=user&action=detail&id=<?= $product['id'] ?>"
+                                   class="btn btn-sm btn-outline-secondary">
+                                    Xem chi tiết
+                                </a>
+                                <a href="<?= BASE_URL ?>?controller=user&action=addToCart&id=<?= $product['id'] ?>"
+                                   class="btn btn-sm btn-danger">
+                                    Thêm vào giỏ
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+
+        <!-- Tin tức -->
+        <section class="my-5">
+            <h3 class="section-title text-center">Tin Tức & Blog</h3>
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa?auto=format&fit=crop&w=600&q=80"
+                             class="card-img-top" alt="News 1">
+                        <div class="card-body">
+                            <h5 class="card-title">Cách Chọn Đồng Hồ Phù Hợp</h5>
+                            <p class="card-text">Hướng dẫn chi tiết cách chọn đồng hồ phù hợp với phong cách và nhu cầu của bạn.</p>
+                            <a href="#" class="btn btn-outline-primary">Đọc thêm</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <img src="https://images.unsplash.com/photo-1587836374828-4dbafa94cf0e?auto=format&fit=crop&w=600&q=80"
+                             class="card-img-top" alt="News 2">
+                        <div class="card-body">
+                            <h5 class="card-title">Xu Hướng Đồng Hồ 2024</h5>
+                            <p class="card-text">Khám phá những xu hướng đồng hồ mới nhất trong năm 2024.</p>
+                            <a href="#" class="btn btn-outline-primary">Đọc thêm</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa?auto=format&fit=crop&w=600&q=80"
+                             class="card-img-top" alt="News 3">
+                        <div class="card-body">
+                            <h5 class="card-title">Bảo Quản Đồng Hồ Đúng Cách</h5>
+                            <p class="card-text">Những bí quyết bảo quản đồng hồ để giữ được độ bền và vẻ đẹp lâu dài.</p>
+                            <a href="#" class="btn btn-outline-primary">Đọc thêm</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter -->
+        <section class="newsletter-section py-5 bg-primary text-white">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h3 class="mb-3">Đăng ký nhận tin</h3>
+                        <p class="mb-0">Nhận thông tin về sản phẩm mới, khuyến mãi đặc biệt và xu hướng đồng hồ mới nhất.</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <form class="newsletter-form" id="newsletter-form">
+                            <div class="input-group input-group-lg">
+                                <input type="email" class="form-control" placeholder="Nhập email của bạn" required>
+                                <button class="btn btn-light" type="submit">
+                                    <i class="fas fa-paper-plane me-2"></i>Đăng ký
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         </div>
     </div>
 
@@ -280,5 +559,26 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Newsletter subscription
+        document.getElementById('newsletter-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('input[type="email"]').value;
+            const button = this.querySelector('button');
+            const originalText = button.innerHTML;
+
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
+
+            // Simulate API call (you can replace with actual API endpoint)
+            setTimeout(() => {
+                alert('Cảm ơn bạn đã đăng ký! Chúng tôi sẽ gửi thông tin mới nhất đến email của bạn.');
+                this.reset();
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
