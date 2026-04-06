@@ -31,6 +31,8 @@ require_once './controllers/AdminController.php';
 require_once './models/Watch.php';
 require_once './models/User.php';
 require_once './models/Category.php';
+require_once './models/Comment.php';
+require_once './models/Comment.php';
 require_once './models/Order.php';
 require_once './models/Voucher.php';
 
@@ -157,6 +159,14 @@ if ($controller) {
             }
             if ($action === 'detail' && isset($_GET['id'])) {
                 $userC->detail((int)$_GET['id']);
+                exit;
+            }
+            if ($action === 'addComment' && isset($_GET['id'])) {
+                $userC->addComment((int)$_GET['id']);
+                exit;
+            }
+            if ($action === 'addComment' && isset($_GET['id'])) {
+                $userC->addComment((int)$_GET['id']);
                 exit;
             }
             if ($action === 'addToCart' && isset($_GET['id'])) {

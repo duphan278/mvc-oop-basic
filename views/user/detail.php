@@ -152,6 +152,39 @@
                 </a>
             </div>
         </div>
+
+        <div class="row mt-5">
+            <div class="col-lg-8">
+                <h4 class="mb-3">Bình luận sản phẩm</h4>
+
+                <?php if (!empty($comments)): ?>
+                    <?php foreach ($comments as $c): ?>
+                        <div class="border rounded p-3 mb-2 bg-light">
+                            <div class="d-flex justify-content-between">
+                                <strong><?= htmlspecialchars($c['fullname'] ?? $c['email'] ?? 'Khách') ?></strong>
+                                <small class="text-muted"><?= htmlspecialchars($c['created_at']) ?></small>
+                            </div>
+                            <div class="mt-2"><?= nl2br(htmlspecialchars($c['content'])) ?></div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="text-muted">Chưa có bình luận nào cho sản phẩm này.</p>
+                <?php endif; ?>
+
+                <?php if (isset($_SESSION['user'])): ?>
+                    <form method="POST" action="<?= BASE_URL ?>?controller=user&action=addComment&id=<?= (int)$product['id'] ?>" class="mt-3">
+                        <label class="form-label fw-semibold">Viết bình luận của bạn</label>
+                        <textarea name="content" class="form-control mb-2" rows="3" required placeholder="Nhập bình luận..."></textarea>
+                        <button type="submit" class="btn btn-primary btn-sm">Gửi bình luận</button>
+                    </form>
+                <?php else: ?>
+                    <p class="mt-3">
+                        <a href="<?= BASE_URL ?>?controller=auth&action=loginPage">Đăng nhập</a> để bình luận sản phẩm.
+                    </p>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
+    <?php include PATH_ROOT . '/views/components/footer.php'; ?>
 </body>
 </html>
