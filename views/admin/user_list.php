@@ -81,6 +81,11 @@
                                                             <i class="fas fa-user-check"></i> Kích hoạt lại
                                                         </a>
                                                     <?php endif; ?>
+                                                    <?php if ((int)$u['id'] !== (int)($_SESSION['user']['id'] ?? 0)): ?>
+                                                        <a href="<?= BASE_URL ?>?controller=admin&action=delete-user&id=<?= $u['id'] ?>" class="btn btn-sm btn-outline-dark" title="Xóa người dùng" onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này? Hành động này không thể hoàn tác.')">
+                                                            <i class="fas fa-trash"></i> Xóa
+                                                        </a>
+                                                    <?php endif; ?>
                                                 </div>
                                             </td>
                                         </tr>

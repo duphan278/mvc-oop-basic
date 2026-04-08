@@ -6,15 +6,22 @@ session_start();
 require_once './commons/env.php'; // Khai báo biến môi trường
 require_once './commons/function.php'; // Hàm hỗ trợ
 
-// Luon nap CSS noi bo de tranh vo giao dien khi CDN bi chan/mat mang.
-ob_start(function ($buffer) {
-    // Bo toan bo CSS inline cu de giao dien moi duoc ap dung dong nhat.
-    $buffer = preg_replace('/<style\b[^>]*>.*?<\/style>/is', '', $buffer);
+$currentController = $_GET['controller'] ?? 'home';
+$currentAction = $_GET['action'] ?? (($_GET['act'] ?? '/') === '/' ? 'index' : ($_GET['act'] ?? 'index'));
+$currentPageCss = BASE_URL . 'public/css/pages/' . $currentController . '-' . $currentAction . '.css';
 
+// Tu dong nap CSS local va bo cac link CDN de chay on dinh tren moi may.
+ob_start(function ($buffer) use ($currentPageCss) {
     if (stripos($buffer, '<head') !== false) {
+        $buffer = preg_replace('/<link[^>]+href="https?:\/\/cdn\.jsdelivr\.net[^"]*"[^>]*>\s*/i', '', $buffer);
+        $buffer = preg_replace('/<link[^>]+href="https?:\/\/cdnjs\.cloudflare\.com[^"]*"[^>]*>\s*/i', '', $buffer);
+        $buffer = preg_replace('/<link[^>]+href="https?:\/\/fonts\.googleapis\.com[^"]*"[^>]*>\s*/i', '', $buffer);
+
         $localCss = '<link rel="stylesheet" href="' . BASE_URL . 'public/css/bootstrap.min.css">';
         $themeCss = '<link rel="stylesheet" href="' . BASE_URL . 'public/css/app.css">';
-        $inject = $localCss . PHP_EOL . '    ' . $themeCss;
+        $faCss = '<link rel="stylesheet" href="' . BASE_URL . 'public/vendor/fontawesome/css/all.min.css">';
+        $pageCss = '<link rel="stylesheet" href="' . $currentPageCss . '">';
+        $inject = $localCss . PHP_EOL . '    ' . $themeCss . PHP_EOL . '    ' . $faCss . PHP_EOL . '    ' . $pageCss;
         return preg_replace('/<head([^>]*)>/i', '<head$1>' . PHP_EOL . '    ' . $inject, $buffer, 1);
     }
 
@@ -132,6 +139,10 @@ if ($controller) {
             }
             if ($action === 'enable-user' && isset($_GET['id'])) {
                 $admin->enableUser((int)$_GET['id']);
+                exit;
+            }
+            if ($action === 'delete-user' && isset($_GET['id'])) {
+                $admin->deleteUser((int)$_GET['id']);
                 exit;
             }
             if ($action === 'reports') {

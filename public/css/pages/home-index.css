@@ -1,0 +1,10 @@
+/* CSS rieng cho trang chu */
+.section-title {
+    margin-bottom: 1.5rem;
+}
+
+.hero-section,
+.banner-section {
+    border-radius: 14px;
+    overflow: hidden;
+}
