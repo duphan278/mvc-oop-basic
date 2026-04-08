@@ -244,6 +244,19 @@ class AdminController extends HomeController
         $this->redirect('?controller=admin&action=list-users');
     }
 
+    public function deleteUser($id)
+    {
+        $currentUserId = (int)($_SESSION['user']['id'] ?? 0);
+
+        // Khong cho admin tu xoa chinh minh.
+        if ($id === $currentUserId) {
+            $this->redirect('?controller=admin&action=list-users');
+        }
+
+        $this->user->delete($id);
+        $this->redirect('?controller=admin&action=list-users');
+    }
+
     public function listUsers()
     {
         $users = $this->user->getAll(); // Đảm bảo model User có hàm getAll()
