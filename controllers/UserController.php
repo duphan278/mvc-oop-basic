@@ -5,11 +5,10 @@ class UserController
     public $category;
     public $order;
     public $voucher;
-<<<<<<< HEAD
-=======
+
     public $wishlist;
     public $comment;
->>>>>>> 62be8aa (save code)
+
 
     public function __construct()
     {
@@ -17,11 +16,7 @@ class UserController
         $this->category = new Category();
         $this->order = new Order();
         $this->voucher = new Voucher();
-<<<<<<< HEAD
-=======
-        $this->wishlist = new Wishlist();
         $this->comment = new Comment();
->>>>>>> 62be8aa (save code)
     }
 
     public function home()
@@ -72,11 +67,11 @@ class UserController
     public function detail($id)
     {
         $product = $this->product->find($id);
-<<<<<<< HEAD
-=======
+
+
         $wishlist = $this->wishlist;
         $comments = $this->comment->getByProductId((int)$id);
->>>>>>> 62be8aa (save code)
+
         require_once PATH_ROOT . '/views/user/detail.php';
     }
 
