@@ -58,6 +58,44 @@
             border-radius: 12px;
             background: #fff;
         }
+        .order-products-wrap {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px;
+        }
+        .order-products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 10px;
+        }
+        .order-product-card {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 8px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+        }
+        .order-product-thumb {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+        .order-product-name {
+            font-weight: 600;
+            font-size: 0.92rem;
+            margin-bottom: 2px;
+        }
+        .order-product-meta {
+            font-size: 0.82rem;
+            color: #475569;
+            line-height: 1.3;
+        }
     </style>
 </head>
 <body>
@@ -205,7 +243,34 @@
                                                     <a href="<?= BASE_URL ?>?controller=admin&action=edit-order&id=<?= $order['id'] ?>#history" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center">
                                                         <i class="fas fa-clock-rotate-left"></i> Lịch sử
                                                     </a>
+                                                    <a href="#order-items-<?= (int)$order['id'] ?>" data-bs-toggle="collapse" class="btn btn-sm btn-outline-dark d-inline-flex align-items-center">
+                                                        <i class="fas fa-box-open"></i> Sản phẩm
+                                                    </a>
                                                 </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="collapse" id="order-items-<?= (int)$order['id'] ?>">
+                                            <td colspan="7" class="bg-light-subtle">
+                                                <?php $items = $orderItemsMap[(int)$order['id']] ?? []; ?>
+                                                <?php if (!empty($items)): ?>
+                                                    <div class="order-products-wrap">
+                                                        <div class="order-products-grid">
+                                                            <?php foreach ($items as $item): ?>
+                                                                <?php $itemImage = resolveProductImage((string)($item['product_image'] ?? ''), [], (int)($item['product_id'] ?? 0)); ?>
+                                                                <div class="order-product-card">
+                                                                    <img src="<?= htmlspecialchars($itemImage) ?>" alt="<?= htmlspecialchars($item['product_name'] ?? '') ?>" class="order-product-thumb">
+                                                                    <div>
+                                                                        <div class="order-product-name"><?= htmlspecialchars($item['product_name'] ?? '') ?></div>
+                                                                        <div class="order-product-meta">SL: <?= (int)($item['quantity'] ?? 0) ?> | Đơn giá: <?= number_format((float)($item['unit_price'] ?? 0), 0, ',', '.') ?> VNĐ</div>
+                                                                        <div class="order-product-meta">Tạm tính: <?= number_format((float)($item['subtotal'] ?? 0), 0, ',', '.') ?> VNĐ</div>
+                                                                    </div>
+                                                                </div>
+                                                            <?php endforeach; ?>
+                                                        </div>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <div class="text-muted small">Đơn hàng chưa có dữ liệu sản phẩm.</div>
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

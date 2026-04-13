@@ -16,6 +16,11 @@
             </a>
         </li>
         <li class="mb-2">
+            <a href="<?= BASE_URL ?>?controller=admin&action=list-categories" class="d-block py-3 px-3 text-decoration-none rounded sidebar-link">
+                <i class="fas fa-tags"></i> Quản lý thương hiệu
+            </a>
+        </li>
+        <li class="mb-2">
             <a href="<?= BASE_URL ?>?controller=admin&action=list-users" class="d-block py-3 px-3 text-decoration-none rounded sidebar-link">
                 <i class="fas fa-users"></i> Quản lý người dùng
             </a>

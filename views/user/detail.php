@@ -71,11 +71,18 @@
         }
 
         .description-box {
-            background: var(--light-gray);
-            padding: 20px;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
+            background: #ffffff;
+            padding: 18px 20px;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
             margin-bottom: 2rem;
+        }
+        .description-box p {
+            margin: 0;
+            color: #475569 !important;
+            font-size: 1.02rem;
+            line-height: 1.75;
         }
 
         .action-group {
@@ -118,6 +125,103 @@
             color: var(--primary-color);
             transform: translateX(-5px);
         }
+        .comments-section-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.85rem;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+        }
+        .comment-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+            align-items: flex-start;
+        }
+        .comment-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2c3e50, #3f5a75);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+        .comment-bubble {
+            flex: 1;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 12px 14px;
+            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+        }
+        .comment-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 6px;
+            align-items: baseline;
+        }
+        .comment-author {
+            font-weight: 700;
+            color: #0f172a;
+            font-size: 0.95rem;
+        }
+        .comment-time {
+            font-size: 0.78rem;
+            color: #64748b;
+            white-space: nowrap;
+        }
+        .comment-content {
+            color: #334155;
+            line-height: 1.55;
+            font-size: 0.95rem;
+            word-break: break-word;
+        }
+        .comment-composer {
+            margin-top: 22px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+        }
+        .comment-composer-label {
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 10px;
+        }
+        .comment-textarea {
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            min-height: 110px;
+            resize: vertical;
+            padding: 12px 14px;
+            transition: border-color .2s ease, box-shadow .2s ease;
+        }
+        .comment-textarea:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+        .comment-submit {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 18px;
+            font-weight: 600;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+        .comment-submit:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+        }
     </style>
 </head>
 <body>
@@ -159,16 +263,20 @@
 
         <div class="row mt-5">
             <div class="col-lg-8">
-                <h4 class="mb-3">Bình luận sản phẩm</h4>
+                <h4 class="mb-3 comments-section-title">Bình luận sản phẩm</h4>
 
                 <?php if (!empty($comments)): ?>
                     <?php foreach ($comments as $c): ?>
-                        <div class="border rounded p-3 mb-2 bg-light">
-                            <div class="d-flex justify-content-between">
-                                <strong><?= htmlspecialchars($c['fullname'] ?? $c['email'] ?? 'Khách') ?></strong>
-                                <small class="text-muted"><?= htmlspecialchars($c['created_at']) ?></small>
+                        <?php $commentAuthor = (string)($c['fullname'] ?? $c['email'] ?? 'Khách'); ?>
+                        <div class="comment-item">
+                            <span class="comment-avatar"><?= htmlspecialchars(mb_substr($commentAuthor, 0, 1)) ?></span>
+                            <div class="comment-bubble">
+                                <div class="comment-head">
+                                    <span class="comment-author"><?= htmlspecialchars($commentAuthor) ?></span>
+                                    <span class="comment-time"><?= htmlspecialchars($c['created_at']) ?></span>
+                                </div>
+                                <div class="comment-content"><?= nl2br(htmlspecialchars($c['content'])) ?></div>
                             </div>
-                            <div class="mt-2"><?= nl2br(htmlspecialchars($c['content'])) ?></div>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -176,10 +284,10 @@
                 <?php endif; ?>
 
                 <?php if (isset($_SESSION['user'])): ?>
-                    <form method="POST" action="<?= BASE_URL ?>?controller=user&action=addComment&id=<?= (int)$product['id'] ?>" class="mt-3">
-                        <label class="form-label fw-semibold">Viết bình luận của bạn</label>
-                        <textarea name="content" class="form-control mb-2" rows="3" required placeholder="Nhập bình luận..."></textarea>
-                        <button type="submit" class="btn btn-primary btn-sm">Gửi bình luận</button>
+                    <form method="POST" action="<?= BASE_URL ?>?controller=user&action=addComment&id=<?= (int)$product['id'] ?>" class="comment-composer">
+                        <label class="form-label comment-composer-label">Viết bình luận của bạn</label>
+                        <textarea name="content" class="form-control comment-textarea mb-2" rows="3" required placeholder="Chia sẻ cảm nhận của bạn về sản phẩm..."></textarea>
+                        <button type="submit" class="btn comment-submit">Gửi bình luận</button>
                     </form>
                 <?php else: ?>
                     <p class="mt-3">

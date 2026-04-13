@@ -2,11 +2,13 @@
 class AdminController extends HomeController
 {
     public $product;
+    public $category;
     public $user;
     public $order;
     public function __construct()
     {
         $this->product = new Watch();
+        $this->category = new Category();
         $this->user = new User();
         $this->order = new Order();
         checkAdmin(); // Chỉ admin mới chạy được các hàm bên dưới
@@ -15,6 +17,36 @@ class AdminController extends HomeController
     {
         $products = $this->product->getAll();
         require_once PATH_ROOT . '/views/admin/index.php';
+    }
+
+    public function listCategories()
+    {
+        $brands = $this->category->getAll();
+        require_once PATH_ROOT . '/views/admin/category_list.php';
+    }
+
+    public function createCategory()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('?controller=admin&action=list-categories');
+        }
+
+        $name = trim($_POST['name'] ?? '');
+        if ($name === '') {
+            $this->redirect('?controller=admin&action=list-categories&brand_message=empty');
+        }
+
+        $exists = $this->category->findByName($name);
+        if ($exists) {
+            $this->redirect('?controller=admin&action=list-categories&brand_message=exists');
+        }
+
+        $created = $this->category->create($name);
+        if ($created) {
+            $this->redirect('?controller=admin&action=list-categories&brand_message=created');
+        }
+
+        $this->redirect('?controller=admin&action=list-categories&brand_message=failed');
     }
 
     public function create()
@@ -62,6 +94,7 @@ class AdminController extends HomeController
     {
         $db = connectDB();
         $orders = [];
+        $orderItemsMap = [];
         $totalRows = 0;
         $perPage = 10;
         $page = max(1, (int)($_GET['page'] ?? 1));
@@ -153,9 +186,17 @@ class AdminController extends HomeController
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
             $orders = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+            if (!empty($orders)) {
+                $orderIds = array_map(static function ($order) {
+                    return (int)($order['id'] ?? 0);
+                }, $orders);
+                $orderItemsMap = $this->order->getItemsByOrderIds($orderIds);
+            }
         } catch (PDOException $e) {
             // DB cũ có thể chưa có bảng/cột orders -> không cho trang admin chết.
             $orders = [];
+            $orderItemsMap = [];
         }
 
         $totalPages = max(1, (int)ceil($totalRows / $perPage));

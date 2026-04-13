@@ -100,6 +100,14 @@ if ($controller) {
                 $admin->listOrders();
                 exit;
             }
+            if ($action === 'list-categories') {
+                $admin->listCategories();
+                exit;
+            }
+            if ($action === 'create-category') {
+                $admin->createCategory();
+                exit;
+            }
             if ($action === 'confirm-order' && isset($_GET['id'])) {
                 $admin->confirmOrder((int)$_GET['id']);
                 exit;

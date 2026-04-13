@@ -22,12 +22,92 @@
             border-left: 3px solid #444;
             padding-left: 10px;
         }
+        .order-items-table thead th {
+            font-weight: 600;
+            color: #495057;
+        }
+        .product-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 260px;
+        }
+        .product-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid #e9ecef;
+            background: #f8f9fa;
+            flex-shrink: 0;
+        }
+        .product-thumb-placeholder {
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
+            border: 1px dashed #ced4da;
+            background: #f8f9fa;
+            color: #6c757d;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            text-align: center;
+            padding: 4px;
+            flex-shrink: 0;
+        }
+        .product-name {
+            font-weight: 500;
+            color: #212529;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.65rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.78rem;
+            letter-spacing: 0.2px;
+        }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-processing {
+            background: #cff4fc;
+            color: #055160;
+        }
+        .status-shipping {
+            background: #cfe2ff;
+            color: #084298;
+        }
+        .status-completed {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+        .status-canceled {
+            background: #f8d7da;
+            color: #842029;
+        }
+        .status-default {
+            background: #e2e3e5;
+            color: #41464b;
+        }
     </style>
 </head>
 <body>
     <?php include PATH_ROOT . '/views/components/navbar.php'; ?>
     <div class="container mt-5">
         <h2 class="mb-4">Tra cứu trạng thái đơn hàng</h2>
+        <?php
+        $statusClasses = [
+            'pending' => 'status-pending',
+            'shipping' => 'status-shipping',
+            'completed' => 'status-completed',
+            'canceled' => 'status-canceled',
+            'processing' => 'status-processing'
+        ];
+        ?>
 
         <?php if (!empty($message)): ?>
             <div class="alert alert-dark-strong"><?= htmlspecialchars($message) ?></div>
@@ -57,17 +137,10 @@
                     <p><strong>Ngày đặt:</strong> <?= htmlspecialchars($order['created_at'] ?? '') ?></p>
                     <p><strong>Trạng thái:</strong> 
                         <?php
-                        $statusClasses = [
-                            'pending' => 'bg-warning',
-                            'shipping' => 'bg-primary',
-                            'completed' => 'bg-success',
-                            'canceled' => 'bg-danger',
-                            'processing' => 'bg-info'
-                        ];
                         $statusKey = strtolower((string)($order['status'] ?? ''));
-                        $statusClass = $statusClasses[$statusKey] ?? 'bg-secondary';
+                        $statusClass = $statusClasses[$statusKey] ?? 'status-default';
                         ?>
-                        <span class="badge <?= $statusClass ?>"><?= htmlspecialchars($order['status'] ?? '') ?></span>
+                        <span class="status-badge <?= $statusClass ?>"><?= htmlspecialchars($order['status'] ?? '') ?></span>
                     </p>
                     <p><strong>Tổng tiền:</strong> <?= number_format($order['total_amount'],0,',','.') ?> đ</p>
                     <?php if (!empty($order['discount_amount']) && $order['discount_amount'] > 0): ?>
@@ -90,8 +163,12 @@
                     <div class="card-body">
                         <ul class="timeline list-unstyled mb-0">
                             <?php foreach ($statusHistory as $h): ?>
+                                <?php
+                                $historyStatusKey = strtolower((string)($h['status'] ?? ''));
+                                $historyStatusClass = $statusClasses[$historyStatusKey] ?? 'status-default';
+                                ?>
                                 <li class="mb-2 status-history">
-                                    <span class="badge bg-dark text-light"><?= htmlspecialchars($h['status'] ?? '') ?></span>
+                                    <span class="status-badge <?= $historyStatusClass ?>"><?= htmlspecialchars($h['status'] ?? '') ?></span>
                                     <small class="status-time"><?= htmlspecialchars(!empty($h['changed_at']) ? date('d/m/Y H:i', strtotime($h['changed_at'])) : '') ?></small>
                                 </li>
                             <?php endforeach; ?>
@@ -104,7 +181,7 @@
                 <div class="card mb-4">
                     <div class="card-header">Chi tiết sản phẩm</div>
                     <div class="card-body p-0">
-                        <table class="table mb-0">
+                        <table class="table order-items-table align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th>Sản phẩm</th>
@@ -116,7 +193,23 @@
                             <tbody>
                                 <?php foreach ($orderItems as $item): ?>
                                     <tr>
-                                        <td><?= htmlspecialchars($item['product_name'] ?? '') ?></td>
+                                        <td>
+                                            <div class="product-cell">
+                                                <?php if (!empty($item['product_image'])): ?>
+                                                    <?php
+                                                    $imageSrc = resolveProductImage((string)$item['product_image'], [], (int)($item['product_id'] ?? 0));
+                                                    ?>
+                                                    <img
+                                                        src="<?= htmlspecialchars($imageSrc) ?>"
+                                                        alt="<?= htmlspecialchars($item['product_name'] ?? '') ?>"
+                                                        class="product-thumb"
+                                                    >
+                                                <?php else: ?>
+                                                    <span class="product-thumb-placeholder">Không có ảnh</span>
+                                                <?php endif; ?>
+                                                <span class="product-name"><?= htmlspecialchars($item['product_name'] ?? '') ?></span>
+                                            </div>
+                                        </td>
                                         <td class="text-center"><?= (int)$item['quantity'] ?></td>
                                         <td class="text-end"><?= number_format($item['unit_price'],0,',','.') ?> đ</td>
                                         <td class="text-end"><?= number_format($item['subtotal'],0,',','.') ?> đ</td>
@@ -143,10 +236,14 @@
                 </thead>
                 <tbody>
                     <?php foreach ($orders as $o): ?>
+                        <?php
+                        $listStatusKey = strtolower((string)($o['status'] ?? ''));
+                        $listStatusClass = $statusClasses[$listStatusKey] ?? 'status-default';
+                        ?>
                         <tr>
                             <td>#<?= htmlspecialchars((string)($o['id'] ?? '')) ?></td>
                             <td><?= htmlspecialchars(!empty($o['created_at']) ? date('d/m/Y H:i', strtotime($o['created_at'])) : '') ?></td>
-                            <td><span class="badge bg-secondary"><?= htmlspecialchars($o['status'] ?? '') ?></span></td>
+                            <td><span class="status-badge <?= $listStatusClass ?>"><?= htmlspecialchars($o['status'] ?? '') ?></span></td>
                             <td class="text-end"><?= number_format($o['total_amount'],0,',','.') ?> đ</td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2 flex-wrap">

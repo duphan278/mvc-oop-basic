@@ -67,10 +67,48 @@ class Order
 
     public function getItems($orderId)
     {
-        $sql = "SELECT * FROM order_items WHERE order_id = :order_id";
+        $sql = "SELECT oi.*, p.image AS product_image
+                FROM order_items oi
+                LEFT JOIN products p ON p.id = oi.product_id
+                WHERE oi.order_id = :order_id";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute(['order_id' => $orderId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getItemsByOrderIds(array $orderIds): array
+    {
+        $cleanIds = array_values(array_filter(array_map('intval', $orderIds), static function ($id) {
+            return $id > 0;
+        }));
+
+        if (empty($cleanIds)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($cleanIds), '?'));
+        $sql = "SELECT oi.*, p.image AS product_image
+                FROM order_items oi
+                LEFT JOIN products p ON p.id = oi.product_id
+                WHERE oi.order_id IN ({$placeholders})
+                ORDER BY oi.order_id DESC, oi.id ASC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($cleanIds);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+        $grouped = [];
+        foreach ($rows as $row) {
+            $orderId = (int)($row['order_id'] ?? 0);
+            if ($orderId <= 0) {
+                continue;
+            }
+            if (!isset($grouped[$orderId])) {
+                $grouped[$orderId] = [];
+            }
+            $grouped[$orderId][] = $row;
+        }
+
+        return $grouped;
     }
 
     public function updateStatus($orderId, $status)
