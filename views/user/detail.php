@@ -243,7 +243,7 @@
             </div>
             <div class="col-md-6">
                 <span class="category-label"><?= htmlspecialchars($product['category_name'] ?? 'N/A') ?></span>
-                <h1><?= $product['name'] ?></h1>
+                <h1><?= htmlspecialchars($product['name'] ?? '') ?></h1>
                 <div class="price-display">
                     <?= number_format($product['price'], 0, ',', '.') ?> <small style="font-size: 1rem;">VND</small>
                 </div>

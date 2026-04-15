@@ -110,13 +110,7 @@
                             <div class="d-flex align-items-center gap-3">
                                 <?php
                                     $img = $item['image'] ?? '';
-                                    if ($img && strpos($img, 'http') === 0) {
-                                        $imgSrc = $img;
-                                    } elseif ($img) {
-                                        $imgSrc = BASE_URL . ltrim($img, '/');
-                                    } else {
-                                        $imgSrc = 'https://via.placeholder.com/80x80?text=Watch';
-                                    }
+                                    $imgSrc = resolveProductImage($img, [], (int)($item['id'] ?? 0));
                                 ?>
                                 <img src="<?= htmlspecialchars($imgSrc) ?>" alt="<?= htmlspecialchars($item['name']) ?>" width="80" height="80" style="object-fit:cover;border:1px solid #eee;">
                                 <div>
@@ -154,18 +148,27 @@
             <!-- Phần chọn phương thức thanh toán và địa chỉ -->
             <div class="cart-box p-3 mt-3">
                 <h5 class="mb-3">Thông tin thanh toán và giao hàng</h5>
+                <?php
+                    $checkoutInfo = $checkoutInfo ?? [];
+                    $prefillName = (string)($checkoutInfo['contact_name'] ?? '');
+                    $prefillPhone = (string)($checkoutInfo['contact_phone'] ?? '');
+                    $prefillAddress = (string)($checkoutInfo['shipping_address'] ?? '');
+                    $prefillPayment = (string)($checkoutInfo['payment_method'] ?? 'cod');
+                    $prefillBank = (string)($checkoutInfo['bank'] ?? '');
+                    $hasSavedCheckout = ($prefillName !== '' || $prefillPhone !== '' || $prefillAddress !== '');
+                ?>
                 <form method="POST" action="<?= BASE_URL ?>?controller=user&action=checkout">
                     <div class="row">
                         <div class="col-md-6">
                             <h6>Phương thức thanh toán</h6>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="payment" id="cod" value="cod" checked>
+                                <input class="form-check-input" type="radio" name="payment" id="cod" value="cod" <?= $prefillPayment !== 'bank' ? 'checked' : '' ?>>
                                 <label class="form-check-label" for="cod">
                                     Thanh toán khi nhận hàng (COD)
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="payment" id="bank" value="bank">
+                                <input class="form-check-input" type="radio" name="payment" id="bank" value="bank" <?= $prefillPayment === 'bank' ? 'checked' : '' ?>>
                                 <label class="form-check-label" for="bank">
                                     Chuyển khoản ngân hàng
                                 </label>
@@ -174,10 +177,10 @@
                                 <h6>Chọn ngân hàng</h6>
                                 <select name="bank" class="form-select" id="bank-select">
                                     <option value="">-- Chọn ngân hàng --</option>
-                                    <option value="vietcombank">Vietcombank</option>
-                                    <option value="bidv">BIDV</option>
-                                    <option value="vietinbank">VietinBank</option>
-                                    <option value="agribank">Agribank</option>
+                                    <option value="vietcombank" <?= $prefillBank === 'vietcombank' ? 'selected' : '' ?>>Vietcombank</option>
+                                    <option value="bidv" <?= $prefillBank === 'bidv' ? 'selected' : '' ?>>BIDV</option>
+                                    <option value="vietinbank" <?= $prefillBank === 'vietinbank' ? 'selected' : '' ?>>VietinBank</option>
+                                    <option value="agribank" <?= $prefillBank === 'agribank' ? 'selected' : '' ?>>Agribank</option>
                                 </select>
                                 <div id="qr-code" class="mt-3" style="display: none;">
                                     <h6>Quét QR để thanh toán</h6>
@@ -187,14 +190,22 @@
                         </div>
                         <div class="col-md-6">
                             <h6>Địa chỉ giao hàng</h6>
+                            <?php if ($hasSavedCheckout): ?>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="use_saved_info" checked>
+                                    <label class="form-check-label" for="use_saved_info">
+                                        Dùng thông tin từ đơn gần nhất
+                                    </label>
+                                </div>
+                            <?php endif; ?>
                             <div class="mb-2">
-                                <input type="text" name="name" class="form-control" placeholder="Họ và tên" required>
+                                <input type="text" name="name" class="form-control" placeholder="Họ và tên" value="<?= htmlspecialchars($prefillName) ?>" required>
                             </div>
                             <div class="mb-2">
-                                <input type="tel" name="phone" class="form-control" placeholder="Số điện thoại" required>
+                                <input type="tel" name="phone" class="form-control" placeholder="Số điện thoại" value="<?= htmlspecialchars($prefillPhone) ?>" required>
                             </div>
                             <div class="mb-2">
-                                <textarea name="address" class="form-control" rows="3" placeholder="Địa chỉ giao hàng" required></textarea>
+                                <textarea name="address" class="form-control" rows="3" placeholder="Địa chỉ giao hàng" required><?= htmlspecialchars($prefillAddress) ?></textarea>
                             </div>
                         </div>
                     </div>
@@ -234,6 +245,15 @@
             const bankSelect = document.getElementById('bank-select');
             const qrCode = document.getElementById('qr-code');
             const qrImage = document.getElementById('qr-image');
+            const useSavedInfoCheckbox = document.getElementById('use_saved_info');
+            const nameInput = document.querySelector('input[name="name"]');
+            const phoneInput = document.querySelector('input[name="phone"]');
+            const addressInput = document.querySelector('textarea[name="address"]');
+            const savedCheckoutInfo = {
+                name: <?= json_encode($prefillName, JSON_UNESCAPED_UNICODE) ?>,
+                phone: <?= json_encode($prefillPhone, JSON_UNESCAPED_UNICODE) ?>,
+                address: <?= json_encode($prefillAddress, JSON_UNESCAPED_UNICODE) ?>
+            };
 
             function toggleBankOptions() {
                 if (bankRadio.checked) {
@@ -258,6 +278,22 @@
             codRadio.addEventListener('change', toggleBankOptions);
             bankRadio.addEventListener('change', toggleBankOptions);
             bankSelect.addEventListener('change', updateQR);
+            toggleBankOptions();
+            updateQR();
+
+            if (useSavedInfoCheckbox) {
+                useSavedInfoCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        nameInput.value = savedCheckoutInfo.name;
+                        phoneInput.value = savedCheckoutInfo.phone;
+                        addressInput.value = savedCheckoutInfo.address;
+                        return;
+                    }
+                    nameInput.value = '';
+                    phoneInput.value = '';
+                    addressInput.value = '';
+                });
+            }
 
             // Xử lý voucher
             const applyVoucherBtn = document.getElementById('apply_voucher');

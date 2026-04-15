@@ -60,12 +60,9 @@ class UserController
 
     public function products()
     {
-        $category_id = $_GET['id'] ?? null;
-        if ($category_id) {
-            $products = $this->product->getByCategory($category_id);
-        } else {
-            $products = $this->product->getAll();
-        }
+        $categoryId = isset($_GET['id']) ? (int)$_GET['id'] : null;
+        $keyword = trim((string)($_GET['q'] ?? ''));
+        $products = $this->product->search($keyword, $categoryId);
         require_once PATH_ROOT . '/views/user/products.php';
     }
 
@@ -122,6 +119,10 @@ class UserController
             header('Location: ' . BASE_URL . '?controller=user&action=products');
             exit;
         }
+        if (!$this->product->find((int)$id)) {
+            header('Location: ' . BASE_URL . '?controller=user&action=products');
+            exit;
+        }
 
         if (!isset($_SESSION['cart'][$id])) {
             $_SESSION['cart'][$id] = 1;
@@ -164,7 +165,7 @@ class UserController
     public function cart()
     {
         // Chặn xem giỏ hàng nếu chưa đăng nhập + đảm bảo user hợp lệ trong DB
-        $this->requireValidUserId();
+        $userId = $this->requireValidUserId();
 
         $cart = $_SESSION['cart'] ?? [];
         $cartItems = [];
@@ -180,6 +181,18 @@ class UserController
                 $total += $item['subtotal'];
             }
             unset($item);
+        }
+
+        // Tự động điền thông tin checkout từ đơn gần nhất để khách cũ không phải nhập lại.
+        $checkoutInfo = $this->order->getLatestCheckoutInfoByUser($userId) ?? [];
+        if (empty($checkoutInfo)) {
+            $checkoutInfo = [
+                'contact_name' => (string)($_SESSION['user']['fullname'] ?? ''),
+                'contact_phone' => '',
+                'shipping_address' => '',
+                'payment_method' => 'cod',
+                'bank' => '',
+            ];
         }
 
         require_once PATH_ROOT . '/views/user/cart.php';

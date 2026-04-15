@@ -34,6 +34,31 @@ class Watch
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function search(?string $keyword = null, ?int $categoryId = null): array
+    {
+        $sql = "SELECT products.*, categories.name AS category_name
+                FROM products
+                LEFT JOIN categories ON products.category_id = categories.id
+                WHERE 1=1";
+        $params = [];
+
+        if ($categoryId !== null && $categoryId > 0) {
+            $sql .= " AND products.category_id = :category_id";
+            $params['category_id'] = $categoryId;
+        }
+
+        $keyword = trim((string)$keyword);
+        if ($keyword !== '') {
+            $sql .= " AND (products.name LIKE :keyword OR categories.name LIKE :keyword)";
+            $params['keyword'] = '%' . $keyword . '%';
+        }
+
+        $sql .= " ORDER BY products.id DESC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+
     // 2. Chi tiết
     public function find($id)
     {

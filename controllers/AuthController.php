@@ -30,18 +30,6 @@ class AuthController extends HomeController{
                 return;
             }
 
-            // Quyền admin cứng: du@gmail.com / 123
-            if ($email === 'du@gmail.com' && $password === '123') {
-                $_SESSION['user'] = [
-                    'id' => 0,
-                    'fullname' => 'Du',
-                    'email' => 'du@gmail.com',
-                    'role' => 'admin'
-                ];
-                $this->redirect('?controller=admin&action=home');
-                return;
-            }
-
             $user = $this->userModel->findByEmail($email);
             if ($user && password_verify($password, $user['password'])) {
                 
@@ -51,6 +39,7 @@ class AuthController extends HomeController{
                     return;
                 }
 
+                session_regenerate_id(true);
                 // Lưu session
                 $_SESSION['user'] = [
                     'id' => $user['id'],
@@ -59,7 +48,8 @@ class AuthController extends HomeController{
                     'role' => $user['role'] ?? 'user'
                 ];
 
-                if ($user['role'] === 'admin' || $user['role'] === 'administrator' || $user['role'] === '1') {
+                $userRole = (string)($user['role'] ?? 'user');
+                if ($userRole === 'admin' || $userRole === 'administrator' || $userRole === '1') {
                     $this->redirect('?controller=admin&action=home');
                 }
                 $this->redirect('?controller=user&action=home');
@@ -112,6 +102,7 @@ class AuthController extends HomeController{
 
             $inserted = $this->userModel->create($userData);
             if ($inserted) {
+                session_regenerate_id(true);
                 $_SESSION['user'] = [
                     'id' => $this->userModel->findByEmail($email)['id'],
                     'fullname' => $fullname,

@@ -82,6 +82,11 @@
         </div>
 
         <h5 class="mb-3">Đồng hồ chính hãng</h5>
+        <?php if (empty($products)): ?>
+            <div class="alert alert-warning">
+                Không tìm thấy sản phẩm phù hợp.
+            </div>
+        <?php endif; ?>
 
         <div class="row justify-content-center">
             <?php foreach ($products as $product): ?>

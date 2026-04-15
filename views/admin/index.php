@@ -69,7 +69,7 @@
                                             <td class="text-end text-success fw-bold"><?= htmlspecialchars(number_format($product['price'], 0, ',', '.')) ?> VNĐ</td>
                                             <td>
                                                 <div style="max-height: 60px; overflow: hidden; text-overflow: ellipsis;">
-                                                    <?= $product['description'] ?? '' ?>
+                                                    <?= nl2br(htmlspecialchars($product['description'] ?? '')) ?>
                                                 </div>
                                             </td>
                                             <td class="text-center">
