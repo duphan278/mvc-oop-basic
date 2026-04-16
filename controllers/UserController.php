@@ -60,18 +60,24 @@ class UserController
 
     public function products()
     {
-        $category_id = $_GET['id'] ?? null;
-        if ($category_id) {
-            $products = $this->product->getByCategory($category_id);
-        } else {
-            $products = $this->product->getAll();
-        }
+        $categoryId = isset($_GET['id']) ? (int)$_GET['id'] : null;
+        $keyword = trim((string)($_GET['q'] ?? ''));
+        $products = $this->product->search($keyword, $categoryId);
+        $brands = $this->category->getAll();
+        $brandsWithProducts = array_values(array_filter($brands, function ($brand) {
+            $brandId = (int)($brand['id'] ?? 0);
+            return $brandId > 0 && $this->category->countProductsByCategoryId($brandId) > 0;
+        }));
         require_once PATH_ROOT . '/views/user/products.php';
     }
 
     public function brands()
     {
         $brands = $this->category->getAll();
+        $brands = array_values(array_filter($brands, function ($brand) {
+            $brandId = (int)($brand['id'] ?? 0);
+            return $brandId > 0 && $this->category->countProductsByCategoryId($brandId) > 0;
+        }));
         require_once PATH_ROOT . '/views/user/brands.php';
     }
 
@@ -122,11 +128,18 @@ class UserController
             header('Location: ' . BASE_URL . '?controller=user&action=products');
             exit;
         }
+        if (!$this->product->find((int)$id)) {
+            header('Location: ' . BASE_URL . '?controller=user&action=products');
+            exit;
+        }
+
+        $requestedQty = isset($_REQUEST['quantity']) ? (int)$_REQUEST['quantity'] : 1;
+        $quantity = max(1, $requestedQty);
 
         if (!isset($_SESSION['cart'][$id])) {
-            $_SESSION['cart'][$id] = 1;
+            $_SESSION['cart'][$id] = $quantity;
         } else {
-            $_SESSION['cart'][$id]++;
+            $_SESSION['cart'][$id] += $quantity;
         }
 
         header('Location: ' . BASE_URL . '?controller=user&action=cart');
@@ -164,7 +177,7 @@ class UserController
     public function cart()
     {
         // Chặn xem giỏ hàng nếu chưa đăng nhập + đảm bảo user hợp lệ trong DB
-        $this->requireValidUserId();
+        $userId = $this->requireValidUserId();
 
         $cart = $_SESSION['cart'] ?? [];
         $cartItems = [];
@@ -182,13 +195,25 @@ class UserController
             unset($item);
         }
 
+        // Tự động điền thông tin checkout từ đơn gần nhất để khách cũ không phải nhập lại.
+        $checkoutInfo = $this->order->getLatestCheckoutInfoByUser($userId) ?? [];
+        if (empty($checkoutInfo)) {
+            $checkoutInfo = [
+                'contact_name' => (string)($_SESSION['user']['fullname'] ?? ''),
+                'contact_phone' => '',
+                'shipping_address' => '',
+                'payment_method' => 'cod',
+                'bank' => '',
+            ];
+        }
+
         require_once PATH_ROOT . '/views/user/cart.php';
     }
 
     public function productsByCategory($category_id)
     {
-        $products = $this->product->getByCategory($category_id);
-        require_once PATH_ROOT . '/views/user/products.php';
+        header('Location: ' . BASE_URL . '?controller=user&action=products&id=' . (int)$category_id);
+        exit;
     }
 
     public function orderStatus()

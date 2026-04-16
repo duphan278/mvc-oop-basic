@@ -36,6 +36,19 @@ class Order
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getLatestCheckoutInfoByUser(int $userId): ?array
+    {
+        $sql = "SELECT contact_name, contact_phone, shipping_address, payment_method, bank
+                FROM orders
+                WHERE user_id = :user_id
+                ORDER BY created_at DESC, id DESC
+                LIMIT 1";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+
     // Chi tiết đơn hàng
     public function find($id)
     {

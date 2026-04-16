@@ -22,6 +22,11 @@ class AdminController extends HomeController
     public function listCategories()
     {
         $brands = $this->category->getAll();
+        $editingBrand = null;
+        $editingId = (int)($_GET['edit_id'] ?? 0);
+        if ($editingId > 0) {
+            $editingBrand = $this->category->find($editingId);
+        }
         require_once PATH_ROOT . '/views/admin/category_list.php';
     }
 
@@ -49,8 +54,60 @@ class AdminController extends HomeController
         $this->redirect('?controller=admin&action=list-categories&brand_message=failed');
     }
 
+    public function updateCategory()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('?controller=admin&action=list-categories');
+        }
+
+        $id = (int)($_POST['id'] ?? 0);
+        $name = trim($_POST['name'] ?? '');
+
+        if ($id <= 0 || $name === '') {
+            $this->redirect('?controller=admin&action=list-categories&brand_message=empty');
+        }
+
+        $brand = $this->category->find($id);
+        if (!$brand) {
+            $this->redirect('?controller=admin&action=list-categories&brand_message=not_found');
+        }
+
+        $exists = $this->category->findByNameExceptId($name, $id);
+        if ($exists) {
+            $this->redirect('?controller=admin&action=list-categories&brand_message=exists');
+        }
+
+        $updated = $this->category->update($id, $name);
+        if ($updated) {
+            $this->redirect('?controller=admin&action=list-categories&brand_message=updated');
+        }
+
+        $this->redirect('?controller=admin&action=list-categories&brand_message=failed');
+    }
+
+    public function deleteCategory($id)
+    {
+        $brand = $this->category->find($id);
+        if (!$brand) {
+            $this->redirect('?controller=admin&action=list-categories&brand_message=not_found');
+        }
+
+        $totalProducts = $this->category->countProductsByCategoryId($id);
+        if ($totalProducts > 0) {
+            $this->redirect('?controller=admin&action=list-categories&brand_message=in_use');
+        }
+
+        $deleted = $this->category->delete($id);
+        if ($deleted) {
+            $this->redirect('?controller=admin&action=list-categories&brand_message=deleted');
+        }
+
+        $this->redirect('?controller=admin&action=list-categories&brand_message=failed');
+    }
+
     public function create()
     {
+        $brands = $this->category->getAll();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $imagePath = '';
             
@@ -268,6 +325,7 @@ class AdminController extends HomeController
     public function edit($id)
     {
         $product = $this->product->find($id);
+        $brands = $this->category->getAll();
         if (!$product) {
             $this->redirect('?act=admin');
         }

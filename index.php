@@ -108,6 +108,14 @@ if ($controller) {
                 $admin->createCategory();
                 exit;
             }
+            if ($action === 'update-category') {
+                $admin->updateCategory();
+                exit;
+            }
+            if ($action === 'delete-category' && isset($_GET['id'])) {
+                $admin->deleteCategory((int)$_GET['id']);
+                exit;
+            }
             if ($action === 'confirm-order' && isset($_GET['id'])) {
                 $admin->confirmOrder((int)$_GET['id']);
                 exit;

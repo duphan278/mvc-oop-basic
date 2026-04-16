@@ -87,8 +87,10 @@
 
         .action-group {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             margin-top: 2rem;
+            align-items: end;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -104,7 +106,7 @@
         .btn-cart {
             background-color: var(--primary-color);
             color: white;
-            flex: 2;
+            flex: 1;
         }
 
         .btn-cart:hover {
@@ -112,6 +114,9 @@
             color: white;
             text-decoration: none;
             transform: translateY(-2px);
+        }
+        .quantity-field {
+            min-width: 120px;
         }
 
         .back-to-list {
@@ -243,18 +248,22 @@
             </div>
             <div class="col-md-6">
                 <span class="category-label"><?= htmlspecialchars($product['category_name'] ?? 'N/A') ?></span>
-                <h1><?= $product['name'] ?></h1>
+                <h1><?= htmlspecialchars($product['name'] ?? '') ?></h1>
                 <div class="price-display">
                     <?= number_format($product['price'], 0, ',', '.') ?> <small style="font-size: 1rem;">VND</small>
                 </div>
                 <div class="description-box">
                     <p class="mb-0 text-muted"><?= nl2br(htmlspecialchars($product['description'] ?? '')) ?></p>
                 </div>
-                <div class="action-group mb-4">
-                    <a href="<?= BASE_URL ?>?controller=user&action=addToCart&id=<?= $product['id'] ?>" class="btn btn-cart">
+                <form class="action-group mb-4" method="post" action="<?= BASE_URL ?>?controller=user&action=addToCart&id=<?= (int)$product['id'] ?>">
+                    <div class="quantity-field">
+                        <label for="quantity" class="form-label fw-semibold mb-1">Số lượng</label>
+                        <input type="number" min="1" step="1" id="quantity" name="quantity" class="form-control" value="1">
+                    </div>
+                    <button type="submit" class="btn btn-cart">
                         <i class="fas fa-cart-plus me-1"></i>Thêm vào giỏ hàng
-                    </a>
-                </div>
+                    </button>
+                </form>
                 <a href="<?= BASE_URL ?>?controller=user&action=products" class="text-decoration-none back-to-list small fw-medium">
                     <i class="fas fa-long-arrow-alt-left me-1"></i> Quay lại danh sách sản phẩm
                 </a>

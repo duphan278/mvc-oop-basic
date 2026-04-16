@@ -30,7 +30,16 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="category_id" class="form-label fw-bold">Thương hiệu</label>
-                                        <input type="number" name="category_id" id="category_id" class="form-control" placeholder="ID thương hiệu (có thể để trống)" value="<?= htmlspecialchars($_POST['category_id'] ?? '') ?>">
+                                        <?php $selectedCategoryId = (int)($_POST['category_id'] ?? 0); ?>
+                                        <select name="category_id" id="category_id" class="form-select">
+                                            <option value="">-- Chọn thương hiệu --</option>
+                                            <?php foreach (($brands ?? []) as $brand): ?>
+                                                <?php $brandId = (int)($brand['id'] ?? 0); ?>
+                                                <option value="<?= $brandId ?>" <?= $selectedCategoryId === $brandId ? 'selected' : '' ?>>
+                                                    #<?= $brandId ?> - <?= htmlspecialchars($brand['name'] ?? '') ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="row">

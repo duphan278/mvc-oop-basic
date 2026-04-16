@@ -16,30 +16,59 @@
         <div class="container-fluid flex-grow-1 p-4 admin-main">
             <h1 class="mb-4 text-primary fw-bold">Quản lý thương hiệu</h1>
 
-            <?php if (isset($_GET['brand_message']) && $_GET['brand_message'] === 'created'): ?>
+            <?php $brandMessage = $_GET['brand_message'] ?? ''; ?>
+            <?php if ($brandMessage === 'created'): ?>
                 <div class="alert alert-success">Đã thêm thương hiệu mới thành công.</div>
-            <?php elseif (isset($_GET['brand_message']) && $_GET['brand_message'] === 'exists'): ?>
+            <?php elseif ($brandMessage === 'updated'): ?>
+                <div class="alert alert-success">Cập nhật thương hiệu thành công.</div>
+            <?php elseif ($brandMessage === 'deleted'): ?>
+                <div class="alert alert-success">Đã xóa thương hiệu thành công.</div>
+            <?php elseif ($brandMessage === 'exists'): ?>
                 <div class="alert alert-warning">Thương hiệu này đã tồn tại.</div>
-            <?php elseif (isset($_GET['brand_message']) && $_GET['brand_message'] === 'empty'): ?>
+            <?php elseif ($brandMessage === 'empty'): ?>
                 <div class="alert alert-warning">Vui lòng nhập tên thương hiệu.</div>
-            <?php elseif (isset($_GET['brand_message']) && $_GET['brand_message'] === 'failed'): ?>
-                <div class="alert alert-danger">Thêm thương hiệu thất bại. Vui lòng thử lại.</div>
+            <?php elseif ($brandMessage === 'in_use'): ?>
+                <div class="alert alert-warning">Không thể xóa vì thương hiệu đang được gán cho sản phẩm.</div>
+            <?php elseif ($brandMessage === 'not_found'): ?>
+                <div class="alert alert-warning">Không tìm thấy thương hiệu cần thao tác.</div>
+            <?php elseif ($brandMessage === 'failed'): ?>
+                <div class="alert alert-danger">Thao tác thất bại. Vui lòng thử lại.</div>
             <?php endif; ?>
 
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-light">
-                    <h5 class="mb-0"><i class="fas fa-plus-circle me-1"></i> Thêm thương hiệu mới</h5>
+                    <h5 class="mb-0">
+                        <i class="fas <?= !empty($editingBrand) ? 'fa-pen-to-square' : 'fa-plus-circle' ?> me-1"></i>
+                        <?= !empty($editingBrand) ? 'Sửa thương hiệu' : 'Thêm thương hiệu mới' ?>
+                    </h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="<?= BASE_URL ?>?controller=admin&action=create-category" class="row g-2">
+                    <form method="POST" action="<?= BASE_URL ?>?controller=admin&action=<?= !empty($editingBrand) ? 'update-category' : 'create-category' ?>" class="row g-2">
+                        <?php if (!empty($editingBrand)): ?>
+                            <input type="hidden" name="id" value="<?= (int)$editingBrand['id'] ?>">
+                        <?php endif; ?>
                         <div class="col-md-8">
-                            <input type="text" name="name" class="form-control" placeholder="Nhập tên thương hiệu (ví dụ: Omega)" required>
+                            <input
+                                type="text"
+                                name="name"
+                                class="form-control"
+                                placeholder="Nhập tên thương hiệu (ví dụ: Omega)"
+                                required
+                                value="<?= htmlspecialchars($editingBrand['name'] ?? '') ?>"
+                            >
                         </div>
                         <div class="col-md-4">
                             <button type="submit" class="btn btn-primary w-100">
-                                <i class="fas fa-save me-1"></i> Lưu thương hiệu
+                                <i class="fas fa-save me-1"></i> <?= !empty($editingBrand) ? 'Cập nhật thương hiệu' : 'Lưu thương hiệu' ?>
                             </button>
                         </div>
+                        <?php if (!empty($editingBrand)): ?>
+                            <div class="col-12">
+                                <a href="<?= BASE_URL ?>?controller=admin&action=list-categories" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-xmark me-1"></i> Hủy sửa
+                                </a>
+                            </div>
+                        <?php endif; ?>
                     </form>
                 </div>
             </div>
@@ -56,6 +85,7 @@
                                     <tr>
                                         <th style="width: 120px;">ID</th>
                                         <th>Tên thương hiệu</th>
+                                        <th style="width: 180px;" class="text-center">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -63,6 +93,16 @@
                                         <tr>
                                             <td>#<?= (int)($brand['id'] ?? 0) ?></td>
                                             <td><?= htmlspecialchars($brand['name'] ?? '') ?></td>
+                                            <td class="text-center">
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <a href="<?= BASE_URL ?>?controller=admin&action=list-categories&edit_id=<?= (int)$brand['id'] ?>" class="btn btn-outline-warning" title="Sửa thương hiệu">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a href="<?= BASE_URL ?>?controller=admin&action=delete-category&id=<?= (int)$brand['id'] ?>" class="btn btn-outline-danger" title="Xóa thương hiệu" onclick="return confirm('Bạn có chắc chắn muốn xóa thương hiệu này?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>

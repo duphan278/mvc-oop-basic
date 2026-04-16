@@ -55,7 +55,7 @@
     <div class="container-fluid mt-3">
         <div class="content-wrap">
         <?php
-            $categories = (new Category())->getAll();
+            $categories = $brandsWithProducts ?? [];
             $currentCat = $_GET['id'] ?? '';
             $rolexFallbackImages = [
                 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=900&q=80',
@@ -82,6 +82,11 @@
         </div>
 
         <h5 class="mb-3">Đồng hồ chính hãng</h5>
+        <?php if (empty($products)): ?>
+            <div class="alert alert-warning">
+                Không tìm thấy sản phẩm phù hợp.
+            </div>
+        <?php endif; ?>
 
         <div class="row justify-content-center">
             <?php foreach ($products as $product): ?>

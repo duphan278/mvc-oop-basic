@@ -11,16 +11,22 @@
     <div class="container mt-4">
         <h1>Danh sách thương hiệu</h1>
         <div class="row">
-            <?php foreach ($brands as $brand): ?>
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title"><?= $brand['name'] ?></h5>
-                            <a href="<?= BASE_URL ?>?controller=user&action=productsByCategory&id=<?= $brand['id'] ?>" class="btn btn-primary">Xem sản phẩm</a>
+            <?php if (empty($brands)): ?>
+                <div class="col-12">
+                    <div class="alert alert-warning">Hiện chưa có danh mục nào có sản phẩm.</div>
+                </div>
+            <?php else: ?>
+                <?php foreach ($brands as $brand): ?>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title"><?= htmlspecialchars($brand['name'] ?? '') ?></h5>
+                                <a href="<?= BASE_URL ?>?controller=user&action=products&id=<?= (int)($brand['id'] ?? 0) ?>" class="btn btn-primary">Xem sản phẩm</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </div>
 </body>

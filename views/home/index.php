@@ -471,7 +471,7 @@
                     Tất cả
                 </a>
                 <?php foreach ($categories as $cat): ?>
-                    <a href="<?= BASE_URL ?>?id=<?= $cat['id'] ?>"
+                    <a href="<?= BASE_URL ?>?controller=user&action=products&id=<?= (int)$cat['id'] ?>"
                        class="btn btn-sm <?= $currentCat == $cat['id'] ? 'btn-warning' : 'btn-outline-secondary' ?>">
                         <?= htmlspecialchars($cat['name']) ?>
                     </a>

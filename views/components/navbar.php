@@ -14,7 +14,7 @@ $cartCount = isset($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0;
         <form class="site-search d-flex align-items-center gap-2 flex-grow-1" method="get" action="<?= BASE_URL ?>">
             <input type="hidden" name="controller" value="user">
             <input type="hidden" name="action" value="products">
-            <input type="text" class="form-control" name="q" placeholder="Tìm sản phẩm, thương hiệu...">
+            <input type="text" class="form-control" name="q" placeholder="Tìm sản phẩm, thương hiệu..." value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
             <button class="btn btn-primary site-search-btn" type="submit">Tìm</button>
         </form>
 
